@@ -162,18 +162,19 @@ export function useVideoFirstFrame(videoUrl: string | undefined, fallbackUrl?: s
     ? { thumb: null, loading: false, error: false }
     : thumbCache.has(videoUrl)
       ? { thumb: thumbCache.get(videoUrl) || null, loading: false, error: false }
-      : { thumb: null, loading: true, error: false };
+      : { thumb: fallbackUrl || null, loading: false, error: false };
   const [state, setState] = useState<FirstFrameState>(initial);
 
   useEffect(() => {
     if (!videoUrl) { setState({ thumb: null, loading: false, error: false }); return; }
     const cached = thumbCache.get(videoUrl);
     if (cached) { setState({ thumb: cached, loading: false, error: false }); return; }
+    if (fallbackUrl) { setState({ thumb: fallbackUrl, loading: false, error: false }); return; }
     setState({ thumb: null, loading: true, error: false });
     let cancelled = false;
     extractFirstFrame(videoUrl)
       .then((dataUrl) => { if (!cancelled) setState({ thumb: dataUrl, loading: false, error: false }); })
-      .catch(() => { if (!cancelled) setState({ thumb: fallbackUrl || null, loading: false, error: true }); });
+      .catch(() => { if (!cancelled) setState({ thumb: null, loading: false, error: true }); });
     return () => { cancelled = true; };
   }, [videoUrl, fallbackUrl]);
 

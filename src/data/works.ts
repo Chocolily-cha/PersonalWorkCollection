@@ -5,14 +5,16 @@ const PORTFOLIO_DIR = '巧克力的作品集';
 function createMediaFile(filename: string, category: string): MediaFile {
   const extension = filename.split('.').pop()?.toLowerCase() || '';
   const filePath = `${PORTFOLIO_DIR}/${category}/${filename}`;
+  const isVideo = extension === 'mp4';
   
   return {
     id: `${category}-${filename}`,
     filename,
     extension,
     filePath,
-    isVideo: ['mp4', 'gif'].includes(extension),
+    isVideo,
     isImage: ['jpg', 'jpeg', 'png', 'gif', 'tiff'].includes(extension),
+    thumbnail: isVideo ? `thumbnails/${filename.replace('.mp4', '.jpg')}` : undefined,
   };
 }
 
