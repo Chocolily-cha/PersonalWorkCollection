@@ -160,7 +160,7 @@ export default function MediaViewer({ media, autoPlay = true }: MediaViewerProps
           onContextMenu={(e) => e.preventDefault()}
           onDragStart={(e) => e.preventDefault()}
         >
-          <source src={`/${media.filePath}`} type={`video/${media.extension}`} />
+          <source src={`/PersonalWorkCollection/${media.filePath}`} type={`video/${media.extension}`} />
         </video>
 
         {isLoading && (
@@ -269,7 +269,7 @@ export default function MediaViewer({ media, autoPlay = true }: MediaViewerProps
   return (
     <div className="relative w-full h-full bg-black rounded-lg overflow-hidden flex items-center justify-center select-none" onContextMenu={(e) => e.preventDefault()} onDragStart={(e) => e.preventDefault()} style={{ WebkitUserSelect: 'none', userSelect: 'none' }}>
       <img
-        src={`/${media.filePath}`}
+        src={`/PersonalWorkCollection/${media.filePath}`}
         alt={media.filename}
         className={`max-w-full max-h-full object-contain ${media.extension !== 'gif' ? 'loading="lazy"' : ''}`}
         loading={media.extension !== 'gif' ? 'lazy' : undefined}
