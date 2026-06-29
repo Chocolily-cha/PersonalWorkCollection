@@ -26,7 +26,7 @@ export interface Work {
   id: string;
   title: string;
   category: Category;
-  createdAt: string;
+  createdAt: string | undefined;
   tools: string[];
   description: string;
   mediaFiles: MediaFile[];
