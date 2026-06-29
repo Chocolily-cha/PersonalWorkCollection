@@ -44,7 +44,7 @@ export default function WorkCard({ work, onClick, index, editMode = false }: Wor
           }
         }
       },
-      { rootMargin: '600px 0px', threshold: 0.01 },
+      { rootMargin: '800px 0px', threshold: 0.01 },
     );
     io.observe(cardRef.current);
     return () => io.disconnect();

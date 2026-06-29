@@ -156,7 +156,7 @@ export default function MediaViewer({ media, autoPlay = true }: MediaViewerProps
           controls={false}
           controlsList="nodownload noplaybackrate noremoteplayback"
           disablePictureInPicture
-          preload="auto"
+          preload="metadata"
           onClick={handleVideoClick}
           onContextMenu={(e) => e.preventDefault()}
           onDragStart={(e) => e.preventDefault()}

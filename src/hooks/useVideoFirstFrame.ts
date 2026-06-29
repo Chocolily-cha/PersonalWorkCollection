@@ -4,28 +4,28 @@ import { useEffect, useState } from 'react';
 
 const thumbCache = new Map<string, string>();
 const pendingPromises = new Map<string, Promise<string>>();
-const SAMPLE_TIMES = [0, 0.5, 1, 2, 3, 5, 8, 12];
+const SAMPLE_TIMES = [0, 0.1, 0.3, 0.5, 1, 2];
+const TIMEOUT_MS = 5000;
 
 function isBlankImage(canvas: HTMLCanvasElement): boolean {
   const ctx = canvas.getContext('2d');
   if (!ctx) return true;
   const w = canvas.width, h = canvas.height;
-  const sampleSize = 100;
+  const sampleSize = Math.min(50, w, h);
+  if (sampleSize < 10) return false;
   const sx = Math.max(0, Math.floor(w / 2 - sampleSize / 2));
   const sy = Math.max(0, Math.floor(h / 2 - sampleSize / 2));
-  const sw = Math.min(sampleSize, w - sx);
-  const sh = Math.min(sampleSize, h - sy);
   try {
-    const data = ctx.getImageData(sx, sy, sw, sh).data;
+    const data = ctx.getImageData(sx, sy, sampleSize, sampleSize).data;
     let totalLuma = 0, minLuma = 255, maxLuma = 0;
-    const pixelCount = data.length / 4;
-    for (let i = 0; i < data.length; i += 4) {
+    const step = Math.max(1, Math.floor(data.length / 4 / 100));
+    for (let i = 0; i < data.length; i += 4 * step) {
       const luma = 0.299 * data[i] + 0.587 * data[i + 1] + 0.114 * data[i + 2];
       totalLuma += luma;
       if (luma < minLuma) minLuma = luma;
       if (luma > maxLuma) maxLuma = luma;
     }
-    const avgLuma = totalLuma / pixelCount;
+    const avgLuma = totalLuma / (data.length / 4 / step);
     if (avgLuma < 8 || avgLuma > 248 || maxLuma - minLuma < 12) return true;
     return false;
   } catch {
@@ -52,6 +52,7 @@ function extractFirstFrame(videoUrl: string): Promise<string> {
     let timeoutId: ReturnType<typeof setTimeout> | null = null;
     let sampleIndex = 0;
     let aborted = false;
+    let hasMetadata = false;
 
     const cleanup = () => {
       try { video.removeAttribute('src'); video.load(); } catch {}
@@ -69,8 +70,17 @@ function extractFirstFrame(videoUrl: string): Promise<string> {
 
     const capture = () => {
       try {
+        if (!video.videoWidth || !video.videoHeight) {
+          sampleIndex++;
+          if (sampleIndex >= SAMPLE_TIMES.length) {
+            fail();
+            return;
+          }
+          trySeek();
+          return;
+        }
         const canvas = document.createElement('canvas');
-        const MAX = 800;
+        const MAX = 600;
         const ratio = Math.min(MAX / video.videoWidth, MAX / video.videoHeight, 1);
         canvas.width = Math.max(1, Math.round(video.videoWidth * ratio));
         canvas.height = Math.max(1, Math.round(video.videoHeight * ratio));
@@ -78,7 +88,7 @@ function extractFirstFrame(videoUrl: string): Promise<string> {
         if (!ctx) { fail(); return; }
         ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
         if (!isBlankImage(canvas)) {
-          const dataUrl = canvas.toDataURL('image/jpeg', 0.82);
+          const dataUrl = canvas.toDataURL('image/jpeg', 0.75);
           thumbCache.set(videoUrl, dataUrl);
           pendingPromises.delete(videoUrl);
           cleanup();
@@ -87,7 +97,7 @@ function extractFirstFrame(videoUrl: string): Promise<string> {
         }
         sampleIndex++;
         if (sampleIndex >= SAMPLE_TIMES.length) {
-          const dataUrl = canvas.toDataURL('image/jpeg', 0.82);
+          const dataUrl = canvas.toDataURL('image/jpeg', 0.75);
           thumbCache.set(videoUrl, dataUrl);
           pendingPromises.delete(videoUrl);
           cleanup();
@@ -100,6 +110,9 @@ function extractFirstFrame(videoUrl: string): Promise<string> {
 
     const trySeek = () => {
       if (aborted) return;
+      if (!hasMetadata) {
+        return;
+      }
       const t = SAMPLE_TIMES[sampleIndex];
       const dur = isFinite(video.duration) ? video.duration : 0;
       if (dur > 0 && t >= dur) {
@@ -110,14 +123,24 @@ function extractFirstFrame(videoUrl: string): Promise<string> {
     };
 
     video.addEventListener('loadedmetadata', () => {
+      hasMetadata = true;
       const dur = isFinite(video.duration) ? video.duration : 0;
-      if (dur > 0 && dur < 1) { try { video.currentTime = 0; } catch {} }
-      else { trySeek(); }
+      if (dur > 0 && dur < 1) {
+        try { video.currentTime = 0; } catch {}
+      } else {
+        trySeek();
+      }
+    });
+
+    video.addEventListener('loadeddata', () => {
+      if (!aborted && hasMetadata) {
+        capture();
+      }
     });
 
     video.addEventListener('seeked', () => { if (!aborted) capture(); });
     video.addEventListener('error', fail);
-    timeoutId = setTimeout(fail, 12000);
+    timeoutId = setTimeout(fail, TIMEOUT_MS);
 
     document.body.appendChild(video);
     video.src = videoUrl;
