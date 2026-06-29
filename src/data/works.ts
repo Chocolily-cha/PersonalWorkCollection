@@ -16,10 +16,9 @@ function createMediaFile(filename: string, category: string): MediaFile {
   };
 }
 
-let idCounter = 0;
-function generateId(): string {
-  idCounter += 1;
-  return `work-${idCounter}-${Date.now().toString(36)}`;
+function generateId(category: string, title: string): string {
+  const safeTitle = title.replace(/[^\w\u4e00-\u9fa5]/g, '-');
+  return `work-${category}-${safeTitle}`;
 }
 
 export const works: Work[] = [
@@ -31,15 +30,19 @@ export const works: Work[] = [
     '心灵鸡汤——早安.mp4',
     '空镜——富士山.mp4',
     '龟兔赛跑——沙滩篇.mp4',
-  ].map(filename => ({
-    id: generateId(),
-    title: filename.replace('.mp4', ''),
-    category: 'AI动画' as Category,
-    createdAt: '2024',
-    tools: ['AI生成', 'After Effects', '剪映'],
-    description: '利用AI技术生成的创意动画作品，展现了人工智能在视觉艺术领域的无限可能。',
-    mediaFiles: [createMediaFile(filename, 'AI动画')],
-  })),
+  ].map(filename => {
+    const title = filename.replace('.mp4', '');
+    const category = 'AI动画' as Category;
+    return {
+      id: generateId(category, title),
+      title,
+      category,
+      createdAt: '2024',
+      tools: ['AI生成', 'After Effects', '剪映'],
+      description: '利用AI技术生成的创意动画作品，展现了人工智能在视觉艺术领域的无限可能。',
+      mediaFiles: [createMediaFile(filename, 'AI动画')],
+    };
+  }),
 
   ...[
     '产品动画-耳机.mp4',
@@ -59,18 +62,22 @@ export const works: Work[] = [
     '角色动画——男孩跳hiphop.mp4',
     '角色动画——走路.mp4',
     '角色动画——飞龙.mp4',
-  ].map(filename => ({
-    id: generateId(),
-    title: filename.replace(/\.(mp4|gif)$/, ''),
-    category: '3D动画' as Category,
-    createdAt: '2024',
-    tools: ['3DsMAX', 'AE'],
-    description: '精心制作的3D动画作品，展示了三维建模与动画设计的专业技巧。',
-    mediaFiles: [createMediaFile(filename, '3D动画')],
-  })),
+  ].map(filename => {
+    const title = filename.replace(/\.(mp4|gif)$/, '');
+    const category = '3D动画' as Category;
+    return {
+      id: generateId(category, title),
+      title,
+      category,
+      createdAt: '2024',
+      tools: ['3DsMAX', 'AE'],
+      description: '精心制作的3D动画作品，展示了三维建模与动画设计的专业技巧。',
+      mediaFiles: [createMediaFile(filename, '3D动画')],
+    };
+  }),
 
   {
-    id: generateId(),
+    id: generateId('模型', 'CCZYJSXY项目效果图'),
     title: 'CCZYJSXY项目效果图',
     category: '模型' as Category,
     createdAt: '',
@@ -86,7 +93,7 @@ export const works: Work[] = [
     ],
   },
   {
-    id: generateId(),
+    id: generateId('模型', 'DJD项目效果图'),
     title: 'DJD项目效果图',
     category: '模型' as Category,
     createdAt: '',
@@ -102,7 +109,7 @@ export const works: Work[] = [
     ],
   },
   {
-    id: generateId(),
+    id: generateId('模型', 'HZ项目效果图'),
     title: 'HZ项目效果图',
     category: '模型' as Category,
     createdAt: '',
@@ -122,7 +129,7 @@ export const works: Work[] = [
     ],
   },
   {
-    id: generateId(),
+    id: generateId('模型', 'XFJCZ项目效果图'),
     title: 'XFJCZ项目效果图',
     category: '模型' as Category,
     createdAt: '',
@@ -138,7 +145,7 @@ export const works: Work[] = [
     ],
   },
   {
-    id: generateId(),
+    id: generateId('模型', 'XJCGQGZ项目效果图'),
     title: 'XJCGQGZ项目效果图',
     category: '模型' as Category,
     createdAt: '',
@@ -152,7 +159,7 @@ export const works: Work[] = [
     ],
   },
   {
-    id: generateId(),
+    id: generateId('模型', 'ADAS技术综合实训室'),
     title: 'ADAS技术综合实训室',
     category: '模型' as Category,
     createdAt: '',
@@ -166,7 +173,7 @@ export const works: Work[] = [
     ],
   },
   {
-    id: generateId(),
+    id: generateId('模型', '智能车嵌入式应用创新实训室'),
     title: '智能车嵌入式应用创新实训室',
     category: '模型' as Category,
     createdAt: '',
@@ -180,7 +187,7 @@ export const works: Work[] = [
     ],
   },
   {
-    id: generateId(),
+    id: generateId('模型', '道路管理系统'),
     title: '道路管理系统',
     category: '模型' as Category,
     createdAt: '',
@@ -192,7 +199,7 @@ export const works: Work[] = [
     ],
   },
   {
-    id: generateId(),
+    id: generateId('模型', '雷达实验室'),
     title: '雷达实验室',
     category: '模型' as Category,
     createdAt: '',
@@ -205,7 +212,7 @@ export const works: Work[] = [
     ],
   },
   {
-    id: generateId(),
+    id: generateId('模型', '智能汽车综合实训室'),
     title: '智能汽车综合实训室',
     category: '模型' as Category,
     createdAt: '',
@@ -218,7 +225,7 @@ export const works: Work[] = [
     ],
   },
   {
-    id: generateId(),
+    id: generateId('模型', '智能网联汽车平台'),
     title: '智能网联汽车平台',
     category: '模型' as Category,
     createdAt: '',
@@ -231,7 +238,7 @@ export const works: Work[] = [
     ],
   },
   {
-    id: generateId(),
+    id: generateId('模型', '智能识别'),
     title: '智能识别',
     category: '模型' as Category,
     createdAt: '',
@@ -243,7 +250,7 @@ export const works: Work[] = [
     ],
   },
   {
-    id: generateId(),
+    id: generateId('模型', 'MHXCZYZZ项目效果图'),
     title: 'MHXCZYZZ项目效果图',
     category: '模型' as Category,
     createdAt: '',
@@ -290,38 +297,34 @@ export const works: Work[] = [
     '整车区.png',
     '新台架教学区.png',
     '无人小车测试标定中心.png',
-    '无人驾驶仿真测试实训室.png',
     '无人驾驶维修检测中心.png',
     '智慧交通模拟实训室.png',
-    '智能汽车创客实训室.png',
     '智能汽车实训室.png',
-    '智能网联汽车测试装调实训室.png',
     '智能网联科普体验展示室.png',
-    '智能网联综合培训室.png',
     '校园无人车运营实训室.png',
     '沙滩夜景.jpg',
     '沙漠.jpg',
     '沙盘.png',
     '熊猫.png',
-    '环境感知系统检测实训室.png',
-    '线控底盘区.png',
-    '车联网系统集成实训室.png',
-    '车路协同实训区.png',
     'CDSF项目效果图.png',
     'WXZY展会效果图.jpg',
     'ZYXY项目总览.png',
-  ].map(filename => ({
-    id: generateId(),
-    title: filename.replace(/\.(jpg|png)$/, '').replace(/^(单体模型|MHXCZYZZ项目效果图|智能网联|智能汽车|智能识别|智能车|道路管理|雷达|ADAS技术|XFJCZ|XJCGQGZ|CDSF|unity|WXZY|ZYXY|三维|上海|乘用|人工|公园|冰川|凤凰|动物|台架|城市|客厅|室内|宫殿|宿舍|工具|房子|技术|整车|新台|无人|智慧|校园|沙滩|沙漠|沙盘|热气球|熊猫|环境|管道|线控|角色|车联|车路)\//, ''),
-    category: '模型' as Category,
-    createdAt: '',
-    tools: ['3ds Max', 'V-Ray', 'AutoCAD', 'Photoshop'],
-    description: '三维建模与渲染作品。',
-    mediaFiles: [createMediaFile(filename, '模型')],
-  })),
+  ].map(filename => {
+    const title = filename.replace(/\.(jpg|png)$/, '').replace(/^(单体模型|MHXCZYZZ项目效果图)\//, '');
+    const category = '模型' as Category;
+    return {
+      id: generateId(category, title),
+      title,
+      category,
+      createdAt: '',
+      tools: ['3ds Max', 'V-Ray', 'Photoshop'],
+      description: '三维建模与渲染作品。',
+      mediaFiles: [createMediaFile(filename, '模型')],
+    };
+  }),
 
   {
-    id: generateId(),
+    id: generateId('平面', '公司智能网联汽车实训基地海报'),
     title: '公司智能网联汽车实训基地海报',
     category: '平面' as Category,
     createdAt: '',
@@ -341,15 +344,19 @@ export const works: Work[] = [
     '学校海报制作.jpg',
     '系统界面设计.jpg',
     '软件界面.png',
-  ].map(filename => ({
-    id: generateId(),
-    title: filename.replace(/\.(jpg|png)$/, ''),
-    category: '平面' as Category,
-    createdAt: '',
-    tools: ['Photoshop', 'Illustrator'],
-    description: '专业的平面设计作品，涵盖海报设计、界面设计等多个领域。',
-    mediaFiles: [createMediaFile(filename, '平面')],
-  })),
+  ].map(filename => {
+    const title = filename.replace(/\.(jpg|png)$/, '');
+    const category = '平面' as Category;
+    return {
+      id: generateId(category, title),
+      title,
+      category,
+      createdAt: '',
+      tools: ['Photoshop', 'Illustrator'],
+      description: '专业的平面设计作品，涵盖海报设计、界面设计等多个领域。',
+      mediaFiles: [createMediaFile(filename, '平面')],
+    };
+  }),
 
   ...[
     '水彩——海岸一景.jpg',
@@ -365,18 +372,22 @@ export const works: Work[] = [
     '素描——美人蕉.JPG',
     '素描——美术楼.JPG',
     '素描——雅轩古宅门.jpg',
-  ].map(filename => ({
-    id: generateId(),
-    title: filename.replace(/\.(jpg|JPG)$/, ''),
-    category: '绘画' as Category,
-    createdAt: '',
-    tools: ['水彩', '素描', '铅笔'],
-    description: '传统绘画作品，展现了扎实的绘画功底和艺术表现力。',
-    mediaFiles: [createMediaFile(filename, '绘画')],
-  })),
+  ].map(filename => {
+    const title = filename.replace(/\.(jpg|JPG)$/, '');
+    const category = '绘画' as Category;
+    return {
+      id: generateId(category, title),
+      title,
+      category,
+      createdAt: '',
+      tools: ['水彩', '素描', '铅笔'],
+      description: '传统绘画作品，展现了扎实的绘画功底和艺术表现力。',
+      mediaFiles: [createMediaFile(filename, '绘画')],
+    };
+  }),
 
   {
-    id: generateId(),
+    id: generateId('摄影', '人像——危安-花海'),
     title: '人像——危安-花海',
     category: '摄影' as Category,
     createdAt: '',
@@ -393,7 +404,7 @@ export const works: Work[] = [
     ],
   },
   {
-    id: generateId(),
+    id: generateId('摄影', '人像——危安-草地'),
     title: '人像——危安-草地',
     category: '摄影' as Category,
     createdAt: '',
@@ -411,7 +422,7 @@ export const works: Work[] = [
     ],
   },
   {
-    id: generateId(),
+    id: generateId('摄影', '人像——妙妙'),
     title: '人像——妙妙',
     category: '摄影' as Category,
     createdAt: '',
@@ -427,7 +438,7 @@ export const works: Work[] = [
     ],
   },
   {
-    id: generateId(),
+    id: generateId('摄影', '人像——婷婷'),
     title: '人像——婷婷',
     category: '摄影' as Category,
     createdAt: '',
@@ -443,7 +454,7 @@ export const works: Work[] = [
     ],
   },
   {
-    id: generateId(),
+    id: generateId('摄影', '人像——梦娇'),
     title: '人像——梦娇',
     category: '摄影' as Category,
     createdAt: '',
@@ -461,7 +472,7 @@ export const works: Work[] = [
     ],
   },
   {
-    id: generateId(),
+    id: generateId('摄影', '人像——辣辣'),
     title: '人像——辣辣',
     category: '摄影' as Category,
     createdAt: '',
@@ -476,7 +487,7 @@ export const works: Work[] = [
     ],
   },
   {
-    id: generateId(),
+    id: generateId('摄影', '风景——深圳人才公园'),
     title: '风景——深圳人才公园',
     category: '摄影' as Category,
     createdAt: '',
@@ -497,15 +508,19 @@ export const works: Work[] = [
     '采星科技(厦门)公司logo动画-1.mp4',
     '采星科技(厦门)公司logo动画-2.mp4',
     '采星科技(厦门)公司宣传介绍.mp4',
-  ].map(filename => ({
-    id: generateId(),
-    title: filename.replace('.mp4', ''),
-    category: '其它' as Category,
-    createdAt: '',
-    tools: ['After Effects'],
-    description: '其它类型的创意作品。',
-    mediaFiles: [createMediaFile(filename, '其它')],
-  })),
+  ].map(filename => {
+    const title = filename.replace('.mp4', '');
+    const category = '其它' as Category;
+    return {
+      id: generateId(category, title),
+      title,
+      category,
+      createdAt: '',
+      tools: ['After Effects'],
+      description: '其它类型的创意作品。',
+      mediaFiles: [createMediaFile(filename, '其它')],
+    };
+  }),
 ];
 
 export function getWorksByCategory(category: Category | 'all'): Work[] {

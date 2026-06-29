@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import type { Work } from '@/data/types';
+import { defaultOrder } from '@/data/defaultOrder';
 
 const STORAGE_KEY = 'portfolioOrder';
 const ADMIN_KEY = 'admin';
@@ -23,8 +24,12 @@ export function useWorkOrder(works: Work[]) {
       if (raw) {
         const arr = JSON.parse(raw);
         if (Array.isArray(arr)) setOrder(arr.filter((x) => typeof x === 'string'));
+      } else {
+        setOrder(defaultOrder);
       }
-    } catch { /* ignore */ }
+    } catch {
+      setOrder(defaultOrder);
+    }
     setHydrated(true);
   }, []);
 
@@ -33,7 +38,7 @@ export function useWorkOrder(works: Work[]) {
     const matchCount = order.filter((id) => works.some((w) => w.id === id)).length;
     if (matchCount / order.length < 0.3) {
       try { window.localStorage.removeItem(STORAGE_KEY); } catch { /* ignore */ }
-      setOrder([]);
+      setOrder(defaultOrder);
     }
   }, [hydrated, order, works]);
 
@@ -76,7 +81,7 @@ export function useWorkOrder(works: Work[]) {
   }, []);
 
   const resetOrder = useCallback(() => {
-    setOrder([]);
+    setOrder(defaultOrder);
     try { window.localStorage.removeItem(STORAGE_KEY); } catch { /* ignore */ }
   }, []);
 
