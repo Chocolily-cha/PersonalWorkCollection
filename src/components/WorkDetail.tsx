@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import dynamic from 'next/dynamic';
 import { Work, MediaFile } from '@/data/types';
 import { useMediaOrder } from '@/hooks/useMediaOrder';
+import { getMediaUrl } from '@/config/paths';
 
 const MediaViewer = dynamic(() => import('./MediaViewer'), {
   loading: () => (
@@ -161,7 +162,7 @@ export default function WorkDetail({ work, onClose, editMode = false, onBackToOv
                   initial={{ opacity: 0, scale: 0.95 }}
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, scale: 1.05 }}
-                  src={`/PersonalWorkCollection/${currentMedia.filePath}`}
+                  src={getMediaUrl(currentMedia.filePath)}
                   alt={work.title}
                   className="w-full h-full object-contain"
                 />
@@ -223,7 +224,7 @@ export default function WorkDetail({ work, onClose, editMode = false, onBackToOv
                         onClick={() => { if (editMode) return; setCurrentMediaIndex(index); }}
                         className={`block w-20 h-16 rounded-lg overflow-hidden border-2 transition-all ${index === currentMediaIndex ? 'border-cyber-purple shadow-lg shadow-cyber-purple/30' : 'border-transparent opacity-60 hover:opacity-100'}`}
                       >
-                        <img src={`/PersonalWorkCollection/${media.filePath}`} alt={media.filename} className="w-full h-full object-cover" draggable={false} />
+                        <img src={getMediaUrl(media.filePath)} alt={media.filename} className="w-full h-full object-cover" draggable={false} />
                       </button>
                       {editMode && (
                         <>

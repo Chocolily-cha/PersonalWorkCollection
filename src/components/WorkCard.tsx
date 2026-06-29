@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { Work } from '@/data/types';
 import { useVideoFirstFrame } from '@/hooks/useVideoFirstFrame';
 import { useMediaOrder } from '@/hooks/useMediaOrder';
+import { getMediaUrl } from '@/config/paths';
 
 interface WorkCardProps {
   work: Work;
@@ -24,8 +25,8 @@ export default function WorkCard({ work, onClick, index, editMode = false }: Wor
   const firstMedia = work.mediaFiles.find((m) => m.filename === firstFilename) || work.mediaFiles[0];
   const isVideo = firstMedia?.isVideo && firstMedia.extension !== 'gif';
 
-  const videoUrl = isVideo ? `/PersonalWorkCollection/${firstMedia.filePath}` : undefined;
-  const fallbackUrl = firstMedia?.thumbnail ? `/PersonalWorkCollection/${firstMedia.thumbnail}` : undefined;
+  const videoUrl = isVideo ? getMediaUrl(firstMedia.filePath) : undefined;
+  const fallbackUrl = firstMedia?.thumbnail ? getMediaUrl(firstMedia.thumbnail) : undefined;
 
   useEffect(() => {
     if (!isVideo || !cardRef.current) {
@@ -109,7 +110,7 @@ export default function WorkCard({ work, onClick, index, editMode = false }: Wor
             </>
           ) : (
             <img
-              src={`/PersonalWorkCollection/${firstMedia.filePath}`}
+              src={getMediaUrl(firstMedia.filePath)}
               alt={work.title}
               className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
               loading="lazy"
