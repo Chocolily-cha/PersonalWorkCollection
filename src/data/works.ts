@@ -17,7 +17,7 @@ function createMediaFile(filename: string, category: string): MediaFile {
 }
 
 function generateId(category: string, title: string): string {
-  const safeTitle = title.replace(/[^\w\u4e00-\u9fa5]/g, '-');
+  const safeTitle = title.replace(/[^\w\u4e00-\u9fa5——\-]/g, '-');
   return `work-${category}-${safeTitle}`;
 }
 
