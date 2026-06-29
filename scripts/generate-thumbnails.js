@@ -12,7 +12,7 @@ if (!fs.existsSync(THUMB_DIR)) {
 
 const categories = ['AI动画', '3D动画', '其它'];
 const SAMPLE_TIME = 0.5;
-const MAX_WIDTH = 600;
+const MAX_WIDTH = 1200;
 const QUALITY = 75;
 
 let total = 0;

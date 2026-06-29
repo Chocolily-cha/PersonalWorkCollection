@@ -152,7 +152,7 @@ export default function WorkDetail({ work, onClose, editMode = false, onBackToOv
 
           <div className="relative aspect-video bg-black" onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd}>
             <AnimatePresence mode="wait">
-              {isVideo ? (
+              {currentMedia ? (isVideo ? (
                 <motion.div key={currentMediaIndex} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="w-full h-full">
                   <MediaViewer media={currentMedia} />
                 </motion.div>
@@ -166,6 +166,10 @@ export default function WorkDetail({ work, onClose, editMode = false, onBackToOv
                   alt={work.title}
                   className="w-full h-full object-contain"
                 />
+              )) : (
+                <div className="w-full h-full flex items-center justify-center text-gray-500">
+                  <span>无媒体内容</span>
+                </div>
               )}
             </AnimatePresence>
 
