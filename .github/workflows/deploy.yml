@@ -40,7 +40,7 @@ jobs:
           du -sh public/巧克力的作品集/
 
       - name: Build with Next.js
-        run: npm run build
+        run: npm run build 2>&1
         timeout-minutes: 30
 
       - name: Debug build output
