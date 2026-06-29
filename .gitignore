@@ -42,6 +42,9 @@ yarn-error.log*
 # System
 Thumbs.db
 
+# Temp
+temp/
+
 # Logs
 *.log
 *.err.log
