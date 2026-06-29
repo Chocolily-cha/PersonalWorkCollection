@@ -71,26 +71,6 @@ export const works: Work[] = [
 
   {
     id: generateId(),
-    title: '杭州项目效果图合集',
-    category: '模型' as Category,
-    createdAt: '',
-    tools: ['3ds Max', 'V-Ray', 'AutoCAD', 'Photoshop'],
-    description: '杭州项目的建筑效果图合集，展示了智能网联汽车实训室的整体设计方案。',
-    mediaFiles: [
-      createMediaFile('HZ项目效果图/ADAS技术综合实训室.png', '模型'),
-      createMediaFile('HZ项目效果图/室外综合实训测试场.jpg', '模型'),
-      createMediaFile('HZ项目效果图/效果图1.png', '模型'),
-      createMediaFile('HZ项目效果图/效果图2.png', '模型'),
-      createMediaFile('HZ项目效果图/效果图3.png', '模型'),
-      createMediaFile('HZ项目效果图/效果图5.png', '模型'),
-      createMediaFile('HZ项目效果图/效果图6.png', '模型'),
-      createMediaFile('HZ项目效果图/效果图7.png', '模型'),
-      createMediaFile('HZ项目效果图/学校.jpg', '模型'),
-      createMediaFile('HZ项目效果图/电脑室.jpg', '模型'),
-    ],
-  },
-  {
-    id: generateId(),
     title: 'CCZYJSXY项目效果图',
     category: '模型' as Category,
     createdAt: '',
@@ -135,6 +115,10 @@ export const works: Work[] = [
       createMediaFile('HZ项目效果图/效果图1.png', '模型'),
       createMediaFile('HZ项目效果图/效果图2.png', '模型'),
       createMediaFile('HZ项目效果图/效果图3.png', '模型'),
+      createMediaFile('HZ项目效果图/效果图5.png', '模型'),
+      createMediaFile('HZ项目效果图/效果图6.png', '模型'),
+      createMediaFile('HZ项目效果图/效果图7.png', '模型'),
+      createMediaFile('HZ项目效果图/电脑室.jpg', '模型'),
     ],
   },
   {
@@ -256,6 +240,18 @@ export const works: Work[] = [
     mediaFiles: [
       createMediaFile('智能识别/智能识别.jpg', '模型'),
       createMediaFile('智能识别/红绿灯.jpg', '模型'),
+    ],
+  },
+  {
+    id: generateId(),
+    title: 'MHXCZYZZ项目效果图',
+    category: '模型' as Category,
+    createdAt: '',
+    tools: ['3ds Max', 'V-Ray', 'AutoCAD', 'Photoshop'],
+    description: 'MHXCZYZZ项目效果图，展示智能网联实训室设计。',
+    mediaFiles: [
+      createMediaFile('MHXCZYZZ项目效果图/智能网联实训室-1.png', '模型'),
+      createMediaFile('MHXCZYZZ项目效果图/智能网联实训室-2.png', '模型'),
     ],
   },
   ...[
