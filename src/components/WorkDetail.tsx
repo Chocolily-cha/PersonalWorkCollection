@@ -1,21 +1,9 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import dynamic from 'next/dynamic';
 import { Work, MediaFile } from '@/data/types';
 import { useMediaOrder } from '@/hooks/useMediaOrder';
 import { getMediaUrl } from '@/config/paths';
-
-const MediaViewer = dynamic(() => import('./MediaViewer'), {
-  loading: () => (
-    <div className="w-full h-full flex items-center justify-center bg-black">
-      <div className="flex flex-col items-center gap-3">
-        <div className="w-10 h-10 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-        <span className="text-sm text-white/60">加载播放器…</span>
-      </div>
-    </div>
-  ),
-  ssr: false,
-});
+import MediaViewer from './MediaViewer';
 
 interface WorkDetailProps {
   work: Work;
