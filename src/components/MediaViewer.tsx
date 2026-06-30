@@ -34,7 +34,6 @@ export default function MediaViewer({ media, autoPlay = true }: MediaViewerProps
   const [error, setError] = useState<string | null>(null);
   const [retryCount, setRetryCount] = useState(0);
   const [isRetrying, setIsRetrying] = useState(false);
-  const [isInView, setIsInView] = useState(false);
 
   const isVideo = media.isVideo && media.extension !== 'gif';
   
@@ -43,32 +42,11 @@ export default function MediaViewer({ media, autoPlay = true }: MediaViewerProps
   const videoSrc = isVideo ? getMediaUrl(media.filePath) : undefined;
 
   useEffect(() => {
-    if (!isVideo || !containerRef.current) {
-      setIsInView(true);
-      return;
-    }
-    const io = new IntersectionObserver(
-      (entries) => {
-        for (const entry of entries) {
-          if (entry.isIntersecting) {
-            setIsInView(true);
-            io.disconnect();
-            break;
-          }
-        }
-      },
-      { rootMargin: '100px 0px', threshold: 0.01 },
-    );
-    io.observe(containerRef.current);
-    return () => io.disconnect();
-  }, [isVideo]);
-
-  useEffect(() => {
     const v = videoRef.current;
-    if (!v || !isVideo || !isInView) return;
+    if (!v || !isVideo) return;
     if (autoPlay) v.play().catch(() => {});
     return () => v?.pause();
-  }, [autoPlay, isVideo, isInView]);
+  }, [autoPlay, isVideo]);
 
   useEffect(() => {
     const v = videoRef.current;
@@ -223,14 +201,14 @@ export default function MediaViewer({ media, autoPlay = true }: MediaViewerProps
           controls={false}
           controlsList="nodownload noplaybackrate noremoteplayback"
           disablePictureInPicture
-          preload={isInView ? 'metadata' : 'none'}
+          preload="metadata"
           poster={posterUrl || undefined}
           onClick={handleVideoClick}
           onContextMenu={(e) => e.preventDefault()}
           onDragStart={(e) => e.preventDefault()}
           crossOrigin="anonymous"
         >
-          {isInView && <source src={videoSrc} type="video/mp4" />}
+          <source src={videoSrc} type="video/mp4" />
         </video>
 
         {isLoading && !error && (
@@ -378,7 +356,7 @@ export default function MediaViewer({ media, autoPlay = true }: MediaViewerProps
       <img
         src={getMediaUrl(media.filePath)}
         alt={media.filename}
-        className={`max-w-full max-h-full object-contain ${media.extension !== 'gif' ? 'loading="lazy"' : ''}`}
+        className="max-w-full max-h-full object-contain"
         loading={media.extension !== 'gif' ? 'lazy' : undefined}
         draggable={false}
       />

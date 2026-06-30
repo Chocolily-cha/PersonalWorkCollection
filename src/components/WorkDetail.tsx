@@ -213,11 +213,11 @@ export default function WorkDetail({ work, onClose, editMode = false, onBackToOv
                       className={`relative flex-shrink-0 transition-all ${editMode ? 'cursor-move' : ''} ${isDragging ? 'opacity-40 scale-95' : ''} ${isDropTarget ? 'ring-2 ring-cyber-purple ring-offset-2 ring-offset-cyber-darker scale-105' : ''}`}
                     >
                       <button
-                        onClick={() => { if (editMode) return; setCurrentMediaIndex(index); }}
-                        className={`block w-20 h-16 rounded-lg overflow-hidden border-2 transition-all ${index === currentMediaIndex ? 'border-cyber-purple shadow-lg shadow-cyber-purple/30' : 'border-transparent opacity-60 hover:opacity-100'}`}
-                      >
-                        <img src={getMediaUrl(media.filePath)} alt={media.filename} className="w-full h-full object-cover" draggable={false} />
-                      </button>
+                  onClick={() => { if (editMode) return; setCurrentMediaIndex(index); }}
+                  className={`block w-20 h-16 rounded-lg overflow-hidden border-2 transition-all ${index === currentMediaIndex ? 'border-cyber-purple shadow-lg shadow-cyber-purple/30' : 'border-transparent opacity-60 hover:opacity-100'}`}
+                >
+                  <img src={getMediaUrl(media.filePath)} alt={media.filename} className="w-full h-full object-cover" draggable={false} loading="lazy" />
+                </button>
                       {editMode && (
                         <>
                           <div className="absolute -top-2 -left-2 w-6 h-6 rounded-full bg-cyber-purple text-white text-xs font-bold flex items-center justify-center shadow-lg pointer-events-none">
