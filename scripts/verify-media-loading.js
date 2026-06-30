@@ -12,11 +12,10 @@ function checkPathsConfig() {
   const pathsFile = path.join(projectRoot, 'src', 'config', 'paths.ts');
   const content = fs.readFileSync(pathsFile, 'utf8');
   
-  if (content.includes('encodeURI')) {
-    console.error('❌ ERROR: encodeURI found in paths.ts - will cause double encoding');
-    process.exitCode = 1;
+  if (!content.includes('encodeURI')) {
+    console.warn('⚠️ Warning: encodeURI not found in getMediaUrl - Chinese paths may fail on GitHub Pages');
   } else {
-    console.log('✅ paths.ts: No encodeURI usage detected');
+    console.log('✅ paths.ts: encodeURI is used for Chinese path support');
   }
   
   if (!content.includes('BASE_PATH')) {
