@@ -68,14 +68,13 @@ export default function MediaViewer({ media, autoPlay = true }: MediaViewerProps
         readyState: v.readyState
       });
       setIsLoading(false);
-      if (retryCount < 5) {
+      if (retryCount < 5 && videoSrc) {
         setIsRetrying(true);
         setTimeout(() => {
-          const originalSrc = videoSrc;
           v.src = '';
           v.load();
           setTimeout(() => {
-            v.src = originalSrc;
+            v.src = videoSrc;
             v.load();
             setRetryCount(r => r + 1);
             setIsRetrying(false);
