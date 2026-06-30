@@ -11,14 +11,34 @@ export function useMediaOrder(workId: string, mediaFilenames: string[]) {
   const sortingConfig = useSortingConfig();
 
   useEffect(() => {
-    if (!sortingConfig.hydrated) return;
+    if (typeof window === 'undefined') return;
+    
+    try {
+      const raw = window.localStorage.getItem(getStorageKey(workId));
+      if (raw) {
+        const arr = JSON.parse(raw);
+        if (Array.isArray(arr)) {
+          const filtered = arr.filter((x) => typeof x === 'string');
+          if (filtered.length > 0) {
+            setOrder(filtered);
+            setHydrated(true);
+            return;
+          }
+        }
+      }
+    } catch { /* ignore */ }
+
+    setHydrated(true);
+  }, [workId]);
+
+  useEffect(() => {
+    if (!sortingConfig.hydrated || !sortingConfig.config) return;
     
     const savedOrder = sortingConfig.getMediaOrder(workId);
     if (savedOrder && savedOrder.length > 0) {
       setOrder(savedOrder);
     }
-    setHydrated(true);
-  }, [workId, sortingConfig]);
+  }, [workId, sortingConfig.hydrated, sortingConfig.config]);
 
   useEffect(() => {
     if (!hydrated || !order.length || !mediaFilenames.length) return;

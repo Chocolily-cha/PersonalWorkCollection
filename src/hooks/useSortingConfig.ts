@@ -24,13 +24,15 @@ interface SortingConfigState {
 export function useSortingConfig() {
   const [state, setState] = useState<SortingConfigState>({
     config: null,
-    loading: true,
+    loading: false,
     error: null,
-    hydrated: false,
+    hydrated: typeof window !== 'undefined',
   });
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
+
+    setState(prev => ({ ...prev, loading: true }));
 
     const fetchConfig = async () => {
       try {
@@ -52,16 +54,17 @@ export function useSortingConfig() {
         });
       } catch (err) {
         console.warn('[SortingConfig] Failed to load config, using fallback:', err);
-        setState({
-          config: null,
+        setState(prev => ({
+          ...prev,
           loading: false,
           error: (err as Error).message,
           hydrated: true,
-        });
+        }));
       }
     };
 
-    fetchConfig();
+    const timer = setTimeout(fetchConfig, 500);
+    return () => clearTimeout(timer);
   }, []);
 
   const getWorkOrder = useCallback((): string[] | null => {

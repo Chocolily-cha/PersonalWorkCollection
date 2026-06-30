@@ -6,6 +6,7 @@ import { defaultOrder } from '@/data/defaultOrder';
 import { useSortingConfig } from '@/hooks/useSortingConfig';
 
 const ADMIN_KEY = 'admin';
+const LOCAL_STORAGE_KEY = 'portfolioOrder';
 
 function arraysEqual(a: string[], b: string[]): boolean {
   if (a.length !== b.length) return false;
@@ -29,19 +30,34 @@ export function useWorkOrder(works: Work[]) {
     const isAdmin = params.get('edit') === '1' && params.get('key') === ADMIN_KEY;
     setHasAdminAccess(isAdmin);
     if (isAdmin) setEditMode(true);
+
+    try {
+      const raw = window.localStorage.getItem(LOCAL_STORAGE_KEY);
+      if (raw) {
+        const arr = JSON.parse(raw);
+        if (Array.isArray(arr)) {
+          const filtered = arr.filter((x) => typeof x === 'string');
+          if (filtered.length > 0) {
+            setOrder(filtered);
+            setHydrated(true);
+            return;
+          }
+        }
+      }
+    } catch { /* ignore */ }
+
+    setOrder(defaultOrder);
+    setHydrated(true);
   }, []);
 
   useEffect(() => {
-    if (!sortingConfig.hydrated) return;
+    if (!sortingConfig.hydrated || !sortingConfig.config) return;
     
     const savedOrder = sortingConfig.getWorkOrder();
     if (savedOrder && savedOrder.length > 0) {
       setOrder(savedOrder);
-    } else {
-      setOrder(defaultOrder);
     }
-    setHydrated(true);
-  }, [sortingConfig.hydrated, sortingConfig]);
+  }, [sortingConfig.hydrated, sortingConfig.config]);
 
   useEffect(() => {
     if (!hydrated || !order.length || !works.length) return;
