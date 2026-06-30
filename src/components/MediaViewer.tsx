@@ -37,11 +37,9 @@ export default function MediaViewer({ media, autoPlay = true }: MediaViewerProps
 
   const isVideo = media.isVideo && media.extension !== 'gif';
   
-  const posterUrl = media.webpThumbnail 
-    ? getMediaUrl(media.webpThumbnail) 
-    : media.thumbnail 
-      ? getMediaUrl(media.thumbnail) 
-      : undefined;
+  const posterUrl = media.thumbnail ? getMediaUrl(media.thumbnail) : undefined;
+
+  const videoSrc = isVideo ? getMediaUrl(media.filePath) : undefined;
 
   useEffect(() => {
     const v = videoRef.current;
@@ -55,21 +53,34 @@ export default function MediaViewer({ media, autoPlay = true }: MediaViewerProps
     if (!v) return;
     const onTimeUpdate = () => { if (!isScrubbing) setCurrentTime(v.currentTime); };
     const onLoaded = () => { setDuration(v.duration || 0); setIsLoading(false); setError(null); };
-    const onWaiting = () => setIsLoading(true);
+    const onWaiting = () => { if (!isPlaying) setIsLoading(true); };
     const onCanPlay = () => setIsLoading(false);
-    const onPlay = () => setIsPlaying(true);
+    const onPlay = () => { setIsPlaying(true); setIsLoading(false); };
     const onPause = () => setIsPlaying(false);
     const onError = () => {
       const errorCode = v.error?.code || 0;
-      console.error('[MediaViewer] Video error:', errorCode, v.error?.message);
+      const errorMsg = v.error?.message || 'Unknown error';
+      console.error('[MediaViewer] Video error:', {
+        code: errorCode,
+        message: errorMsg,
+        src: v.src,
+        networkState: v.networkState,
+        readyState: v.readyState
+      });
       setIsLoading(false);
-      if (errorCode === 4 && retryCount < 3) {
+      if (retryCount < 5) {
         setIsRetrying(true);
         setTimeout(() => {
+          const originalSrc = videoSrc;
+          v.src = '';
           v.load();
-          setRetryCount(r => r + 1);
-          setIsRetrying(false);
-        }, 2000);
+          setTimeout(() => {
+            v.src = originalSrc;
+            v.load();
+            setRetryCount(r => r + 1);
+            setIsRetrying(false);
+          }, 200);
+        }, 1500);
       } else {
         setError('视频加载失败，请刷新页面重试');
       }
@@ -187,7 +198,6 @@ export default function MediaViewer({ media, autoPlay = true }: MediaViewerProps
           ref={videoRef}
           className="w-full h-full object-contain cursor-pointer"
           muted={muted}
-          loop
           playsInline
           controls={false}
           controlsList="nodownload noplaybackrate noremoteplayback"
@@ -197,8 +207,9 @@ export default function MediaViewer({ media, autoPlay = true }: MediaViewerProps
           onClick={handleVideoClick}
           onContextMenu={(e) => e.preventDefault()}
           onDragStart={(e) => e.preventDefault()}
+          crossOrigin="anonymous"
         >
-          <source src={getMediaUrl(media.filePath)} type={`video/${media.extension}`} />
+          <source src={videoSrc} type="video/mp4" />
         </video>
 
         {isLoading && !error && (
@@ -224,13 +235,26 @@ export default function MediaViewer({ media, autoPlay = true }: MediaViewerProps
             <svg className="w-16 h-16 text-white/40 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
-            <span className="text-white/60 mb-4">{error}</span>
-            <button
-              onClick={handleRetry}
-              className="px-6 py-2 rounded-full bg-gradient-to-r from-cyber-cyan to-cyber-purple text-white text-sm hover:opacity-90 transition-opacity"
-            >
-              点击重试
-            </button>
+            <span className="text-white/60 mb-2">{error}</span>
+            <span className="text-white/40 text-xs mb-4">视频解码失败，建议下载后使用本地播放器打开</span>
+            <div className="flex gap-3">
+              <button
+                onClick={handleRetry}
+                className="px-6 py-2 rounded-full bg-gradient-to-r from-cyber-cyan to-cyber-purple text-white text-sm hover:opacity-90 transition-opacity"
+              >
+                点击重试
+              </button>
+              <a
+                href={videoSrc}
+                download={media.filename}
+                className="px-6 py-2 rounded-full bg-white/20 text-white text-sm hover:bg-white/30 transition-colors flex items-center gap-2"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                </svg>
+                下载视频
+              </a>
+            </div>
           </div>
         )}
 

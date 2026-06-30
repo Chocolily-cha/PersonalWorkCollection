@@ -8,7 +8,6 @@ function createMediaFile(filename: string, category: string): MediaFile {
   const isVideo = extension === 'mp4';
   
   const jpgThumbnail = `thumbnails/${filename.replace('.mp4', '.jpg')}`;
-  const webpThumbnail = `thumbnails/${filename.replace('.mp4', '.webp')}`;
   
   return {
     id: `${category}-${filename}`,
@@ -18,7 +17,7 @@ function createMediaFile(filename: string, category: string): MediaFile {
     isVideo,
     isImage: ['jpg', 'jpeg', 'png', 'gif', 'tiff'].includes(extension),
     thumbnail: isVideo ? jpgThumbnail : undefined,
-    webpThumbnail: isVideo ? webpThumbnail : undefined,
+    webpThumbnail: undefined,
   };
 }
 

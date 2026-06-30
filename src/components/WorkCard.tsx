@@ -28,8 +28,8 @@ export default function WorkCard({ work, onClick, index, editMode = false }: Wor
   const isVideo = firstMedia?.isVideo && firstMedia.extension !== 'gif';
 
   const videoUrl = isVideo ? getMediaUrl(firstMedia.filePath) : undefined;
-  const fallbackUrl = firstMedia?.thumbnail ? getMediaUrl(firstMedia.thumbnail) : undefined;
-  const webpFallbackUrl = firstMedia?.webpThumbnail ? getMediaUrl(firstMedia.webpThumbnail) : fallbackUrl;
+  const webpFallbackUrl = firstMedia?.webpThumbnail ? getMediaUrl(firstMedia.webpThumbnail) : undefined;
+  const fallbackUrl = webpFallbackUrl || (firstMedia?.thumbnail ? getMediaUrl(firstMedia.thumbnail) : undefined);
 
   useEffect(() => {
     if (!isVideo || !cardRef.current) {
@@ -53,12 +53,12 @@ export default function WorkCard({ work, onClick, index, editMode = false }: Wor
     return () => io.disconnect();
   }, [isVideo]);
 
-  const { thumb, loading, error } = useVideoFirstFrame(
+  const { thumb, loading } = useVideoFirstFrame(
     shouldPrefetch ? videoUrl : undefined,
     fallbackUrl,
   );
 
-  const displayThumb = thumb || (error ? fallbackUrl : undefined);
+  const displayThumb = thumb;
 
   const handleImageLoad = () => setIsImageLoaded(true);
   const handleImageError = () => {

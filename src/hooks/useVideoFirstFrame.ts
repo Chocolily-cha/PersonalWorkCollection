@@ -4,8 +4,8 @@ import { useEffect, useState } from 'react';
 
 const thumbCache = new Map<string, string>();
 const pendingPromises = new Map<string, Promise<string>>();
-const SAMPLE_TIMES = [0, 0.1, 0.3, 0.5, 1, 2];
-const TIMEOUT_MS = 10000;
+const SAMPLE_TIMES = [0, 0.1, 0.2, 0.3, 0.5, 1, 2, 3, 5];
+const TIMEOUT_MS = 15000;
 
 const PERF_METRICS = {
   totalAttempts: 0,
@@ -211,22 +211,21 @@ interface FirstFrameState {
 
 export function useVideoFirstFrame(videoUrl: string | undefined, fallbackUrl?: string): FirstFrameState {
   const initial: FirstFrameState = !videoUrl
-    ? { thumb: null, loading: false, error: false }
+    ? { thumb: fallbackUrl || null, loading: false, error: false }
     : thumbCache.has(videoUrl)
-      ? { thumb: thumbCache.get(videoUrl) || null, loading: false, error: false }
+      ? { thumb: thumbCache.get(videoUrl) || fallbackUrl || null, loading: false, error: false }
       : { thumb: fallbackUrl || null, loading: false, error: false };
   const [state, setState] = useState<FirstFrameState>(initial);
 
   useEffect(() => {
-    if (!videoUrl) { setState({ thumb: null, loading: false, error: false }); return; }
+    if (!videoUrl) { setState({ thumb: fallbackUrl || null, loading: false, error: false }); return; }
     const cached = thumbCache.get(videoUrl);
     if (cached) { setState({ thumb: cached, loading: false, error: false }); return; }
-    if (fallbackUrl) { setState({ thumb: fallbackUrl, loading: false, error: false }); return; }
-    setState({ thumb: null, loading: true, error: false });
+    setState({ thumb: fallbackUrl || null, loading: true, error: false });
     let cancelled = false;
     extractFirstFrame(videoUrl)
       .then((dataUrl) => { if (!cancelled) setState({ thumb: dataUrl, loading: false, error: false }); })
-      .catch(() => { if (!cancelled) setState({ thumb: null, loading: false, error: true }); });
+      .catch(() => { if (!cancelled) setState({ thumb: fallbackUrl || null, loading: false, error: true }); });
     return () => { cancelled = true; };
   }, [videoUrl, fallbackUrl]);
 
