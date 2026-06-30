@@ -1,8 +1,9 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 
 const thumbCache = new Map<string, string>();
+const blankCache = new Set<string>();
 const pendingPromises = new Map<string, Promise<string>>();
 const SAMPLE_TIMES = [0, 0.1, 0.2, 0.3, 0.5, 1, 2, 3, 5];
 const TIMEOUT_MS = 15000;
@@ -50,10 +51,16 @@ function isBlankImage(canvas: HTMLCanvasElement): boolean {
   }
 }
 
-function extractFirstFrame(videoUrl: string): Promise<string> {
+
+
+async function extractFirstFrame(videoUrl: string): Promise<string> {
+  if (blankCache.has(videoUrl)) {
+    logPerformance('blank-cache-hit', { url: videoUrl });
+    throw new Error('Blank thumbnail cached');
+  }
   if (thumbCache.has(videoUrl)) {
     logPerformance('cache-hit', { url: videoUrl });
-    return Promise.resolve(thumbCache.get(videoUrl)!);
+    return thumbCache.get(videoUrl)!;
   }
   if (pendingPromises.has(videoUrl)) {
     logPerformance('pending-reuse', { url: videoUrl });
@@ -141,14 +148,13 @@ function extractFirstFrame(videoUrl: string): Promise<string> {
         sampleIndex++;
         logPerformance('retry', { url: videoUrl, reason: 'blank-image', sampleIndex });
         if (sampleIndex >= SAMPLE_TIMES.length) {
-          const dataUrl = canvas.toDataURL('image/jpeg', 0.75);
-          thumbCache.set(videoUrl, dataUrl);
-          pendingPromises.delete(videoUrl);
-          cleanup();
-          success(dataUrl);
-          return;
-        }
-        trySeek();
+        blankCache.add(videoUrl);
+        pendingPromises.delete(videoUrl);
+        cleanup();
+        fail('all-samples-blank');
+        return;
+      }
+      trySeek();
       } catch (e) {
         fail('capture-exception');
         logPerformance('error', { url: videoUrl, error: (e as Error).message });
@@ -212,15 +218,14 @@ interface FirstFrameState {
 export function useVideoFirstFrame(videoUrl: string | undefined, fallbackUrl?: string): FirstFrameState {
   const initial: FirstFrameState = !videoUrl
     ? { thumb: fallbackUrl || null, loading: false, error: false }
-    : thumbCache.has(videoUrl)
-      ? { thumb: thumbCache.get(videoUrl) || fallbackUrl || null, loading: false, error: false }
-      : { thumb: fallbackUrl || null, loading: false, error: false };
+    : { thumb: fallbackUrl || null, loading: false, error: false };
   const [state, setState] = useState<FirstFrameState>(initial);
+  const prevUrlRef = useRef<string | undefined>(videoUrl);
 
   useEffect(() => {
     if (!videoUrl) { setState({ thumb: fallbackUrl || null, loading: false, error: false }); return; }
-    const cached = thumbCache.get(videoUrl);
-    if (cached) { setState({ thumb: cached, loading: false, error: false }); return; }
+    if (videoUrl === prevUrlRef.current) { return; }
+    prevUrlRef.current = videoUrl;
     setState({ thumb: fallbackUrl || null, loading: true, error: false });
     let cancelled = false;
     extractFirstFrame(videoUrl)
