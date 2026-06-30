@@ -1,6 +1,7 @@
 import './globals.css';
 import type { Metadata } from 'next';
 import StarryBackground from '@/components/StarryBackground';
+import PerformanceMonitor from '@/components/PerformanceMonitor';
 
 export const metadata: Metadata = {
   title: '巧克力作品集',
@@ -12,6 +13,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="zh-CN">
       <body className="min-h-screen">
         <StarryBackground />
+        <PerformanceMonitor />
         <div className="relative z-10">{children}</div>
       </body>
     </html>

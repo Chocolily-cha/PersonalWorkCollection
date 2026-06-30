@@ -5,7 +5,24 @@ import { useEffect, useState } from 'react';
 const thumbCache = new Map<string, string>();
 const pendingPromises = new Map<string, Promise<string>>();
 const SAMPLE_TIMES = [0, 0.1, 0.3, 0.5, 1, 2];
-const TIMEOUT_MS = 5000;
+const TIMEOUT_MS = 10000;
+
+const PERF_METRICS = {
+  totalAttempts: 0,
+  successes: 0,
+  failures: 0,
+  timeouts: 0,
+  avgDuration: 0,
+};
+
+function logPerformance(event: string, details?: Record<string, unknown>) {
+  if (process.env.NODE_ENV !== 'production') {
+    console.log(`[VideoFirstFrame] ${event}`, details);
+  }
+  if (typeof window !== 'undefined' && (window as unknown as { _perfLog?: Function })._perfLog) {
+    (window as unknown as { _perfLog: Function })._perfLog('video-first-frame', event, details);
+  }
+}
 
 function isBlankImage(canvas: HTMLCanvasElement): boolean {
   const ctx = canvas.getContext('2d');
@@ -34,12 +51,24 @@ function isBlankImage(canvas: HTMLCanvasElement): boolean {
 }
 
 function extractFirstFrame(videoUrl: string): Promise<string> {
-  if (thumbCache.has(videoUrl)) return Promise.resolve(thumbCache.get(videoUrl)!);
-  if (pendingPromises.has(videoUrl)) return pendingPromises.get(videoUrl)!;
+  if (thumbCache.has(videoUrl)) {
+    logPerformance('cache-hit', { url: videoUrl });
+    return Promise.resolve(thumbCache.get(videoUrl)!);
+  }
+  if (pendingPromises.has(videoUrl)) {
+    logPerformance('pending-reuse', { url: videoUrl });
+    return pendingPromises.get(videoUrl)!;
+  }
+
+  PERF_METRICS.totalAttempts++;
+  const startTime = performance.now();
 
   const promise = new Promise<string>((resolve, reject) => {
     if (typeof document === 'undefined') {
-      reject(new Error('SSR'));
+      const error = new Error('SSR');
+      logPerformance('error', { url: videoUrl, error: error.message, phase: 'ssr' });
+      PERF_METRICS.failures++;
+      reject(error);
       return;
     }
     const video = document.createElement('video');
@@ -60,20 +89,34 @@ function extractFirstFrame(videoUrl: string): Promise<string> {
       if (timeoutId) clearTimeout(timeoutId);
     };
 
-    const fail = () => {
+    const fail = (reason?: string) => {
       if (aborted) return;
       aborted = true;
       cleanup();
       pendingPromises.delete(videoUrl);
-      reject(new Error('Failed to extract first frame'));
+      const duration = performance.now() - startTime;
+      const errorReason = reason || 'unknown';
+      logPerformance('fail', { url: videoUrl, reason: errorReason, duration });
+      PERF_METRICS.failures++;
+      if (errorReason === 'timeout') PERF_METRICS.timeouts++;
+      reject(new Error(`Failed to extract first frame: ${errorReason}`));
+    };
+
+    const success = (dataUrl: string) => {
+      const duration = performance.now() - startTime;
+      PERF_METRICS.successes++;
+      PERF_METRICS.avgDuration = (PERF_METRICS.avgDuration * (PERF_METRICS.successes - 1) + duration) / PERF_METRICS.successes;
+      logPerformance('success', { url: videoUrl, duration, sampleIndex });
+      resolve(dataUrl);
     };
 
     const capture = () => {
       try {
         if (!video.videoWidth || !video.videoHeight) {
           sampleIndex++;
+          logPerformance('retry', { url: videoUrl, reason: 'no-dimensions', sampleIndex });
           if (sampleIndex >= SAMPLE_TIMES.length) {
-            fail();
+            fail('no-dimensions-after-retries');
             return;
           }
           trySeek();
@@ -85,27 +128,31 @@ function extractFirstFrame(videoUrl: string): Promise<string> {
         canvas.width = Math.max(1, Math.round(video.videoWidth * ratio));
         canvas.height = Math.max(1, Math.round(video.videoHeight * ratio));
         const ctx = canvas.getContext('2d');
-        if (!ctx) { fail(); return; }
+        if (!ctx) { fail('no-canvas-context'); return; }
         ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
         if (!isBlankImage(canvas)) {
           const dataUrl = canvas.toDataURL('image/jpeg', 0.75);
           thumbCache.set(videoUrl, dataUrl);
           pendingPromises.delete(videoUrl);
           cleanup();
-          resolve(dataUrl);
+          success(dataUrl);
           return;
         }
         sampleIndex++;
+        logPerformance('retry', { url: videoUrl, reason: 'blank-image', sampleIndex });
         if (sampleIndex >= SAMPLE_TIMES.length) {
           const dataUrl = canvas.toDataURL('image/jpeg', 0.75);
           thumbCache.set(videoUrl, dataUrl);
           pendingPromises.delete(videoUrl);
           cleanup();
-          resolve(dataUrl);
+          success(dataUrl);
           return;
         }
         trySeek();
-      } catch { fail(); }
+      } catch (e) {
+        fail('capture-exception');
+        logPerformance('error', { url: videoUrl, error: (e as Error).message });
+      }
     };
 
     const trySeek = () => {
@@ -139,8 +186,13 @@ function extractFirstFrame(videoUrl: string): Promise<string> {
     });
 
     video.addEventListener('seeked', () => { if (!aborted) capture(); });
-    video.addEventListener('error', fail);
-    timeoutId = setTimeout(fail, TIMEOUT_MS);
+    video.addEventListener('error', () => {
+      const errorCode = video.error?.code || 'unknown';
+      const errorMsg = video.error?.message || 'video-error';
+      logPerformance('video-error', { url: videoUrl, code: errorCode, message: errorMsg });
+      fail(`video-error-${errorCode}`);
+    });
+    timeoutId = setTimeout(() => fail('timeout'), TIMEOUT_MS);
 
     document.body.appendChild(video);
     video.src = videoUrl;
