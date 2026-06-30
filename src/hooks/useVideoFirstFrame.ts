@@ -79,7 +79,6 @@ async function extractFirstFrame(videoUrl: string): Promise<string> {
       return;
     }
     const video = document.createElement('video');
-    video.crossOrigin = 'anonymous';
     video.muted = true;
     video.playsInline = true;
     video.preload = 'metadata';
@@ -226,6 +225,10 @@ export function useVideoFirstFrame(videoUrl: string | undefined, fallbackUrl?: s
     if (!videoUrl) { setState({ thumb: fallbackUrl || null, loading: false, error: false }); return; }
     if (videoUrl === prevUrlRef.current) { return; }
     prevUrlRef.current = videoUrl;
+    if (fallbackUrl) {
+      setState({ thumb: fallbackUrl, loading: false, error: false });
+      return;
+    }
     setState({ thumb: fallbackUrl || null, loading: true, error: false });
     let cancelled = false;
     extractFirstFrame(videoUrl)

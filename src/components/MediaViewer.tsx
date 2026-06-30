@@ -204,10 +204,9 @@ export default function MediaViewer({ media, autoPlay = true }: MediaViewerProps
           preload="metadata"
           poster={posterUrl || undefined}
           onClick={handleVideoClick}
-          onContextMenu={(e) => e.preventDefault()}
-          onDragStart={(e) => e.preventDefault()}
-          crossOrigin="anonymous"
-        >
+      onContextMenu={(e) => e.preventDefault()}
+      onDragStart={(e) => e.preventDefault()}
+    >
           <source src={videoSrc} type="video/mp4" />
         </video>
 
