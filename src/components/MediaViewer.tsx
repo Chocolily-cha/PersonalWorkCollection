@@ -31,8 +31,17 @@ export default function MediaViewer({ media, autoPlay = true }: MediaViewerProps
   const [hoverFraction, setHoverFraction] = useState<number | null>(null);
   const [volume, setVolume] = useState(1);
   const [muted, setMuted] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [retryCount, setRetryCount] = useState(0);
+  const [isRetrying, setIsRetrying] = useState(false);
 
   const isVideo = media.isVideo && media.extension !== 'gif';
+  
+  const posterUrl = media.webpThumbnail 
+    ? getMediaUrl(media.webpThumbnail) 
+    : media.thumbnail 
+      ? getMediaUrl(media.thumbnail) 
+      : undefined;
 
   useEffect(() => {
     const v = videoRef.current;
@@ -45,11 +54,26 @@ export default function MediaViewer({ media, autoPlay = true }: MediaViewerProps
     const v = videoRef.current;
     if (!v) return;
     const onTimeUpdate = () => { if (!isScrubbing) setCurrentTime(v.currentTime); };
-    const onLoaded = () => { setDuration(v.duration || 0); setIsLoading(false); };
+    const onLoaded = () => { setDuration(v.duration || 0); setIsLoading(false); setError(null); };
     const onWaiting = () => setIsLoading(true);
     const onCanPlay = () => setIsLoading(false);
     const onPlay = () => setIsPlaying(true);
     const onPause = () => setIsPlaying(false);
+    const onError = () => {
+      const errorCode = v.error?.code || 0;
+      console.error('[MediaViewer] Video error:', errorCode, v.error?.message);
+      setIsLoading(false);
+      if (errorCode === 4 && retryCount < 3) {
+        setIsRetrying(true);
+        setTimeout(() => {
+          v.load();
+          setRetryCount(r => r + 1);
+          setIsRetrying(false);
+        }, 2000);
+      } else {
+        setError('视频加载失败，请刷新页面重试');
+      }
+    };
     v.addEventListener('timeupdate', onTimeUpdate);
     v.addEventListener('loadedmetadata', onLoaded);
     v.addEventListener('durationchange', onLoaded);
@@ -57,6 +81,7 @@ export default function MediaViewer({ media, autoPlay = true }: MediaViewerProps
     v.addEventListener('canplay', onCanPlay);
     v.addEventListener('play', onPlay);
     v.addEventListener('pause', onPause);
+    v.addEventListener('error', onError);
     return () => {
       v.removeEventListener('timeupdate', onTimeUpdate);
       v.removeEventListener('loadedmetadata', onLoaded);
@@ -65,11 +90,22 @@ export default function MediaViewer({ media, autoPlay = true }: MediaViewerProps
       v.removeEventListener('canplay', onCanPlay);
       v.removeEventListener('play', onPlay);
       v.removeEventListener('pause', onPause);
+      v.removeEventListener('error', onError);
     };
-  }, [isScrubbing]);
+  }, [isScrubbing, retryCount]);
 
   useEffect(() => { if (videoRef.current) videoRef.current.volume = volume; }, [volume]);
   useEffect(() => { if (videoRef.current) videoRef.current.muted = muted; }, [muted]);
+
+  const handleRetry = () => {
+    const v = videoRef.current;
+    if (!v) return;
+    setError(null);
+    setIsLoading(true);
+    setRetryCount(0);
+    v.load();
+    if (autoPlay) v.play().catch(() => {});
+  };
 
   const fractionFromEvent = useCallback((clientX: number): number => {
     const el = progressRef.current;
@@ -157,6 +193,7 @@ export default function MediaViewer({ media, autoPlay = true }: MediaViewerProps
           controlsList="nodownload noplaybackrate noremoteplayback"
           disablePictureInPicture
           preload="metadata"
+          poster={posterUrl || undefined}
           onClick={handleVideoClick}
           onContextMenu={(e) => e.preventDefault()}
           onDragStart={(e) => e.preventDefault()}
@@ -164,12 +201,36 @@ export default function MediaViewer({ media, autoPlay = true }: MediaViewerProps
           <source src={getMediaUrl(media.filePath)} type={`video/${media.extension}`} />
         </video>
 
-        {isLoading && (
+        {isLoading && !error && (
           <div className="absolute inset-0 flex items-center justify-center bg-black/50 pointer-events-none">
             <div className="flex flex-col items-center gap-2">
               <div className="w-10 h-10 border-2 border-white/30 border-t-white rounded-full animate-spin" />
               <span className="text-sm text-white/80">视频加载中…</span>
             </div>
+          </div>
+        )}
+
+        {isRetrying && (
+          <div className="absolute inset-0 flex items-center justify-center bg-black/50 pointer-events-none">
+            <div className="flex flex-col items-center gap-2">
+              <div className="w-10 h-10 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+              <span className="text-sm text-white/80">重试中 ({retryCount}/3)…</span>
+            </div>
+          </div>
+        )}
+
+        {error && (
+          <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/80">
+            <svg className="w-16 h-16 text-white/40 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <span className="text-white/60 mb-4">{error}</span>
+            <button
+              onClick={handleRetry}
+              className="px-6 py-2 rounded-full bg-gradient-to-r from-cyber-cyan to-cyber-purple text-white text-sm hover:opacity-90 transition-opacity"
+            >
+              点击重试
+            </button>
           </div>
         )}
 

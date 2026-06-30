@@ -18,8 +18,8 @@ export interface MediaFile {
   filePath: string;
   isVideo: boolean;
   isImage: boolean;
-  // 视频首帧预览图（可与视频同名的jpg/png文件，没有则留空）
   thumbnail?: string;
+  webpThumbnail?: string;
 }
 
 export interface Work {

@@ -17,6 +17,8 @@ export default function WorkCard({ work, onClick, index, editMode = false }: Wor
   const cardRef = useRef<HTMLDivElement>(null);
   const [inView, setInView] = useState(false);
   const [shouldPrefetch, setShouldPrefetch] = useState(false);
+  const [isImageLoaded, setIsImageLoaded] = useState(false);
+  const [imageError, setImageError] = useState(false);
 
   const allFilenames = work.mediaFiles.map((m) => m.filename);
   const { sortMedia, hydrated } = useMediaOrder(work.id, allFilenames);
@@ -27,6 +29,7 @@ export default function WorkCard({ work, onClick, index, editMode = false }: Wor
 
   const videoUrl = isVideo ? getMediaUrl(firstMedia.filePath) : undefined;
   const fallbackUrl = firstMedia?.thumbnail ? getMediaUrl(firstMedia.thumbnail) : undefined;
+  const webpFallbackUrl = firstMedia?.webpThumbnail ? getMediaUrl(firstMedia.webpThumbnail) : fallbackUrl;
 
   useEffect(() => {
     if (!isVideo || !cardRef.current) {
@@ -57,6 +60,12 @@ export default function WorkCard({ work, onClick, index, editMode = false }: Wor
 
   const displayThumb = thumb || (error ? fallbackUrl : undefined);
 
+  const handleImageLoad = () => setIsImageLoaded(true);
+  const handleImageError = () => {
+    setImageError(true);
+    setIsImageLoaded(true);
+  };
+
   return (
     <motion.div
       ref={cardRef}
@@ -75,13 +84,25 @@ export default function WorkCard({ work, onClick, index, editMode = false }: Wor
           {isVideo ? (
             <>
               {displayThumb ? (
-                <img
-                  src={displayThumb}
-                  alt={work.title}
-                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                  loading="lazy"
-                  decoding="async"
-                />
+                <div className="relative w-full h-full">
+                  {!isImageLoaded && (
+                    <div className="absolute inset-0 bg-gradient-to-br from-cyber-purple/20 via-cyber-blue/10 to-cyber-cyan/20 animate-pulse" />
+                  )}
+                  <picture>
+                    {firstMedia?.webpThumbnail && (
+                      <source srcSet={webpFallbackUrl} type="image/webp" />
+                    )}
+                    <img
+                      src={displayThumb}
+                      alt={work.title}
+                      className={`w-full h-full object-cover transition-all duration-500 group-hover:scale-110 ${isImageLoaded ? 'opacity-100' : 'opacity-0'}`}
+                      loading="lazy"
+                      decoding="async"
+                      onLoad={handleImageLoad}
+                      onError={handleImageError}
+                    />
+                  </picture>
+                </div>
               ) : loading || inView ? (
                 <div className="w-full h-full bg-gradient-to-br from-cyber-purple/30 via-cyber-blue/20 to-cyber-cyan/30 flex items-center justify-center">
                   <div className="flex flex-col items-center gap-2">
