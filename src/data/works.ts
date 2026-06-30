@@ -28,13 +28,13 @@ function generateId(category: string, title: string): string {
 
 export const works: Work[] = [
   ...[
-    'EXPN新春宣传片.mp4',
-    '古诗——赠汪伦.mp4',
-    '吉祥物动画演示.mp4',
-    '广告——财神送水.mp4',
-    '心灵鸡汤——早安.mp4',
-    '空镜——富士山.mp4',
     '龟兔赛跑——沙滩篇.mp4',
+    '古诗——赠汪伦.mp4',
+    '广告——财神送水.mp4',
+    '吉祥物动画演示.mp4',
+    '空镜——富士山.mp4',
+    '心灵鸡汤——早安.mp4',
+    'EXPN新春宣传片.mp4',
   ].map(filename => {
     const title = filename.replace('.mp4', '');
     const category = 'AI动画' as Category;
@@ -50,23 +50,23 @@ export const works: Work[] = [
   }),
 
   ...[
-    '产品动画-耳机.mp4',
-    '产品动画——摩托车展示平台.mp4',
-    '产品动画——管道.mp4',
-    '产品渲染-小米充电宝.mp4',
     '场景——凤凰古城-漫游.mp4',
-    '摄像机拆解动画.mp4',
+    '白斑闯关赛.mp4',
+    '产品动画——摩托车展示平台.mp4',
     '演示动画-汽车停车控制.mp4',
+    '产品动画-耳机.mp4',
+    '角色动画——修女表情.mp4',
+    '角色动画——战斗准备.mp4',
+    '角色动画——飞龙.mp4',
+    '产品动画——管道.mp4',
+    '角色动画——走路.mp4',
+    '角色动画——男孩跳hiphop.mp4',
+    '产品渲染-小米充电宝.mp4',
+    '摄像机拆解动画.mp4',
     '演示动画——DNA动画.mp4',
     '演示动画——魔球动画.mp4',
-    '白斑闯关赛.mp4',
-    '角色动画——修女表情.mp4',
     '角色动画——展示动作.mp4',
-    '角色动画——战斗准备.mp4',
     '角色动画——游戏动作.mp4',
-    '角色动画——男孩跳hiphop.mp4',
-    '角色动画——走路.mp4',
-    '角色动画——飞龙.mp4',
   ].map(filename => {
     const title = filename.replace(/\.(mp4|gif)$/, '');
     const category = '3D动画' as Category;
@@ -81,6 +81,35 @@ export const works: Work[] = [
     };
   }),
 
+  ...[
+    '冰川.jpg',
+    '熊猫.png',
+    '沙漠.jpg',
+  ].map(filename => {
+    const title = filename.replace(/\.(jpg|png)$/, '');
+    const category = '模型' as Category;
+    return {
+      id: generateId(category, title),
+      title,
+      category,
+      createdAt: '',
+      tools: ['3ds Max', 'V-Ray', 'Photoshop'],
+      description: '三维建模与渲染作品。',
+      mediaFiles: [createMediaFile(filename, '模型')],
+    };
+  }),
+  {
+    id: generateId('模型', '智能识别'),
+    title: '智能识别',
+    category: '模型' as Category,
+    createdAt: '',
+    tools: ['3ds Max', 'V-Ray', 'AutoCAD', 'Photoshop'],
+    description: '智能识别系统效果图。',
+    mediaFiles: [
+      createMediaFile('智能识别/智能识别.jpg', '模型'),
+      createMediaFile('智能识别/红绿灯.jpg', '模型'),
+    ],
+  },
   {
     id: generateId('模型', 'CCZYJSXY项目效果图'),
     title: 'CCZYJSXY项目效果图',
@@ -97,6 +126,57 @@ export const works: Work[] = [
       createMediaFile('CCZYJSXY项目效果图/车联网系统集成实训室.png', '模型'),
     ],
   },
+  ...[
+    '上海建筑.jpg',
+    '城市景色.jpg',
+  ].map(filename => {
+    const title = filename.replace(/\.(jpg|png)$/, '');
+    const category = '模型' as Category;
+    return {
+      id: generateId(category, title),
+      title,
+      category,
+      createdAt: '',
+      tools: ['3ds Max', 'V-Ray', 'Photoshop'],
+      description: '三维建模与渲染作品。',
+      mediaFiles: [createMediaFile(filename, '模型')],
+    };
+  }),
+  {
+    id: generateId('模型', 'XFJCZ项目效果图'),
+    title: 'XFJCZ项目效果图',
+    category: '模型' as Category,
+    createdAt: '',
+    tools: ['3ds Max', 'V-Ray', 'AutoCAD', 'Photoshop'],
+    description: 'XFJCZ项目效果图，展示智能网联汽车各区域设计。',
+    mediaFiles: [
+      createMediaFile('XFJCZ项目效果图/区域1-1+X考核.jpg', '模型'),
+      createMediaFile('XFJCZ项目效果图/区域2-台架区.jpg', '模型'),
+      createMediaFile('XFJCZ项目效果图/区域3-线控区.jpg', '模型'),
+      createMediaFile('XFJCZ项目效果图/区域4-沙盘区.jpg', '模型'),
+      createMediaFile('XFJCZ项目效果图/区域5-底盘区.jpg', '模型'),
+      createMediaFile('XFJCZ项目效果图/总图.png', '模型'),
+    ],
+  },
+  ...[
+    '室内房间.jpg',
+    '城市道路场景.jpg',
+    '单体模型/座舱.png',
+    '城市弯路建筑.jpg',
+    '公园一角.jpg',
+  ].map(filename => {
+    const title = filename.replace(/\.(jpg|png)$/, '').replace(/^(单体模型|MHXCZYZZ项目效果图)\//, '');
+    const category = '模型' as Category;
+    return {
+      id: generateId(category, title),
+      title,
+      category,
+      createdAt: '',
+      tools: ['3ds Max', 'V-Ray', 'Photoshop'],
+      description: '三维建模与渲染作品。',
+      mediaFiles: [createMediaFile(filename, '模型')],
+    };
+  }),
   {
     id: generateId('模型', 'DJD项目效果图'),
     title: 'DJD项目效果图',
@@ -131,22 +211,6 @@ export const works: Work[] = [
       createMediaFile('HZ项目效果图/效果图6.png', '模型'),
       createMediaFile('HZ项目效果图/效果图7.png', '模型'),
       createMediaFile('HZ项目效果图/电脑室.jpg', '模型'),
-    ],
-  },
-  {
-    id: generateId('模型', 'XFJCZ项目效果图'),
-    title: 'XFJCZ项目效果图',
-    category: '模型' as Category,
-    createdAt: '',
-    tools: ['3ds Max', 'V-Ray', 'AutoCAD', 'Photoshop'],
-    description: 'XFJCZ项目效果图，展示智能网联汽车各区域设计。',
-    mediaFiles: [
-      createMediaFile('XFJCZ项目效果图/区域1-1+X考核.jpg', '模型'),
-      createMediaFile('XFJCZ项目效果图/区域2-台架区.jpg', '模型'),
-      createMediaFile('XFJCZ项目效果图/区域3-线控区.jpg', '模型'),
-      createMediaFile('XFJCZ项目效果图/区域4-沙盘区.jpg', '模型'),
-      createMediaFile('XFJCZ项目效果图/区域5-底盘区.jpg', '模型'),
-      createMediaFile('XFJCZ项目效果图/总图.png', '模型'),
     ],
   },
   {
@@ -243,18 +307,6 @@ export const works: Work[] = [
     ],
   },
   {
-    id: generateId('模型', '智能识别'),
-    title: '智能识别',
-    category: '模型' as Category,
-    createdAt: '',
-    tools: ['3ds Max', 'V-Ray', 'AutoCAD', 'Photoshop'],
-    description: '智能识别系统效果图。',
-    mediaFiles: [
-      createMediaFile('智能识别/智能识别.jpg', '模型'),
-      createMediaFile('智能识别/红绿灯.jpg', '模型'),
-    ],
-  },
-  {
     id: generateId('模型', 'MHXCZYZZ项目效果图'),
     title: 'MHXCZYZZ项目效果图',
     category: '模型' as Category,
@@ -267,9 +319,7 @@ export const works: Work[] = [
     ],
   },
   ...[
-    '上海建筑.jpg',
     '凤凰古城.jpg',
-    '冰川.jpg',
     '工具建模.png',
     '单体模型/机械.png',
     '单体模型/魔法棒.png',
@@ -282,19 +332,13 @@ export const works: Work[] = [
     'unity摄像机拆解动画.jpg',
     '三维动画-汽车停车控制.jpg',
     '单体模型/充电宝.png',
-    '单体模型/座舱.png',
     '单体模型/线控底盘联动.png',
     '单体模型/线控驱动实训平台.png',
     '单体模型/黑色小车.png',
     '乘用车自动驾驶装调实训室.png',
     '人工智能应用实训室.png',
-    '公园一角.jpg',
-    '城市弯路建筑.jpg',
-    '城市景色.jpg',
-    '城市道路场景.jpg',
     '实训室总览.png',
     '客厅练习.jpg',
-    '室内房间.jpg',
     '宫殿.jpg',
     '宿舍-练习.jpg',
     '房子.jpg',
@@ -308,9 +352,7 @@ export const works: Work[] = [
     '智能网联科普体验展示室.png',
     '校园无人车运营实训室.png',
     '沙滩夜景.jpg',
-    '沙漠.jpg',
     '沙盘.png',
-    '熊猫.png',
     'CDSF项目效果图.png',
     'WXZY展会效果图.jpg',
     'ZYXY项目总览.png',
@@ -328,6 +370,21 @@ export const works: Work[] = [
     };
   }),
 
+  ...[
+    '智能网联文化墙设计图.jpg',
+  ].map(filename => {
+    const title = filename.replace(/\.(jpg|png)$/, '');
+    const category = '平面' as Category;
+    return {
+      id: generateId(category, title),
+      title,
+      category,
+      createdAt: '',
+      tools: ['Photoshop', 'Illustrator'],
+      description: '专业的平面设计作品，涵盖海报设计、界面设计等多个领域。',
+      mediaFiles: [createMediaFile(filename, '平面')],
+    };
+  }),
   {
     id: generateId('平面', '公司智能网联汽车实训基地海报'),
     title: '公司智能网联汽车实训基地海报',
@@ -342,13 +399,12 @@ export const works: Work[] = [
     ],
   },
   ...[
-    '产品使用说明封面设计.jpg',
-    '工具图标.png',
     '教材封面设计.png',
-    '智能网联文化墙设计图.jpg',
-    '学校海报制作.jpg',
-    '系统界面设计.jpg',
     '软件界面.png',
+    '产品使用说明封面设计.jpg',
+    '系统界面设计.jpg',
+    '学校海报制作.jpg',
+    '工具图标.png',
   ].map(filename => {
     const title = filename.replace(/\.(jpg|png)$/, '');
     const category = '平面' as Category;
@@ -364,19 +420,19 @@ export const works: Work[] = [
   }),
 
   ...[
+    '水彩——莫奈日出印象临摹.JPG',
     '水彩——海岸一景.jpg',
     '水彩——湖畔孤舟.jpg',
-    '水彩——莫奈日出印象临摹.JPG',
     '水彩——鱼跃水上.JPG',
-    '素描——古坊水乡.jpg',
-    '素描——枝叶.JPG',
-    '素描——枯树干.JPG',
-    '素描——树丛一角.jpg',
     '素描——玫瑰.JPG',
     '素描——百合.JPG',
     '素描——美人蕉.JPG',
-    '素描——美术楼.JPG',
+    '素描——枝叶.JPG',
+    '素描——枯树干.JPG',
     '素描——雅轩古宅门.jpg',
+    '素描——古坊水乡.jpg',
+    '素描——树丛一角.jpg',
+    '素描——美术楼.JPG',
   ].map(filename => {
     const title = filename.replace(/\.(jpg|JPG)$/, '');
     const category = '绘画' as Category;
@@ -392,41 +448,6 @@ export const works: Work[] = [
   }),
 
   {
-    id: generateId('摄影', '人像——危安-花海'),
-    title: '人像——危安-花海',
-    category: '摄影' as Category,
-    createdAt: '',
-    tools: ['摄影', 'Lightroom'],
-    description: '人像摄影作品，花海主题。',
-    mediaFiles: [
-      createMediaFile('人像——危安-花海/1.jpg', '摄影'),
-      createMediaFile('人像——危安-花海/2.jpg', '摄影'),
-      createMediaFile('人像——危安-花海/3.jpg', '摄影'),
-      createMediaFile('人像——危安-花海/4.jpg', '摄影'),
-      createMediaFile('人像——危安-花海/5.jpg', '摄影'),
-      createMediaFile('人像——危安-花海/6.jpg', '摄影'),
-      createMediaFile('人像——危安-花海/7.jpg', '摄影'),
-    ],
-  },
-  {
-    id: generateId('摄影', '人像——危安-草地'),
-    title: '人像——危安-草地',
-    category: '摄影' as Category,
-    createdAt: '',
-    tools: ['摄影', 'Lightroom'],
-    description: '人像摄影作品，草地主题。',
-    mediaFiles: [
-      createMediaFile('人像——危安-草地/1.jpg', '摄影'),
-      createMediaFile('人像——危安-草地/2.jpg', '摄影'),
-      createMediaFile('人像——危安-草地/3.jpg', '摄影'),
-      createMediaFile('人像——危安-草地/4.jpg', '摄影'),
-      createMediaFile('人像——危安-草地/5.jpg', '摄影'),
-      createMediaFile('人像——危安-草地/6.jpg', '摄影'),
-      createMediaFile('人像——危安-草地/7.jpg', '摄影'),
-      createMediaFile('人像——危安-草地/8.jpg', '摄影'),
-    ],
-  },
-  {
     id: generateId('摄影', '人像——妙妙'),
     title: '人像——妙妙',
     category: '摄影' as Category,
@@ -440,22 +461,6 @@ export const works: Work[] = [
       createMediaFile('人像——妙妙/4.JPG', '摄影'),
       createMediaFile('人像——妙妙/5.JPG', '摄影'),
       createMediaFile('人像——妙妙/6.JPG', '摄影'),
-    ],
-  },
-  {
-    id: generateId('摄影', '人像——婷婷'),
-    title: '人像——婷婷',
-    category: '摄影' as Category,
-    createdAt: '',
-    tools: ['摄影', 'Lightroom'],
-    description: '人像摄影作品。',
-    mediaFiles: [
-      createMediaFile('人像——婷婷/1.JPG', '摄影'),
-      createMediaFile('人像——婷婷/2.JPG', '摄影'),
-      createMediaFile('人像——婷婷/3.JPG', '摄影'),
-      createMediaFile('人像——婷婷/4.JPG', '摄影'),
-      createMediaFile('人像——婷婷/5.JPG', '摄影'),
-      createMediaFile('人像——婷婷/6.JPG', '摄影'),
     ],
   },
   {
@@ -492,6 +497,57 @@ export const works: Work[] = [
     ],
   },
   {
+    id: generateId('摄影', '人像——危安-花海'),
+    title: '人像——危安-花海',
+    category: '摄影' as Category,
+    createdAt: '',
+    tools: ['摄影', 'Lightroom'],
+    description: '人像摄影作品，花海主题。',
+    mediaFiles: [
+      createMediaFile('人像——危安-花海/1.jpg', '摄影'),
+      createMediaFile('人像——危安-花海/2.jpg', '摄影'),
+      createMediaFile('人像——危安-花海/3.jpg', '摄影'),
+      createMediaFile('人像——危安-花海/4.jpg', '摄影'),
+      createMediaFile('人像——危安-花海/5.jpg', '摄影'),
+      createMediaFile('人像——危安-花海/6.jpg', '摄影'),
+      createMediaFile('人像——危安-花海/7.jpg', '摄影'),
+    ],
+  },
+  {
+    id: generateId('摄影', '人像——婷婷'),
+    title: '人像——婷婷',
+    category: '摄影' as Category,
+    createdAt: '',
+    tools: ['摄影', 'Lightroom'],
+    description: '人像摄影作品。',
+    mediaFiles: [
+      createMediaFile('人像——婷婷/1.JPG', '摄影'),
+      createMediaFile('人像——婷婷/2.JPG', '摄影'),
+      createMediaFile('人像——婷婷/3.JPG', '摄影'),
+      createMediaFile('人像——婷婷/4.JPG', '摄影'),
+      createMediaFile('人像——婷婷/5.JPG', '摄影'),
+      createMediaFile('人像——婷婷/6.JPG', '摄影'),
+    ],
+  },
+  {
+    id: generateId('摄影', '人像——危安-草地'),
+    title: '人像——危安-草地',
+    category: '摄影' as Category,
+    createdAt: '',
+    tools: ['摄影', 'Lightroom'],
+    description: '人像摄影作品，草地主题。',
+    mediaFiles: [
+      createMediaFile('人像——危安-草地/1.jpg', '摄影'),
+      createMediaFile('人像——危安-草地/2.jpg', '摄影'),
+      createMediaFile('人像——危安-草地/3.jpg', '摄影'),
+      createMediaFile('人像——危安-草地/4.jpg', '摄影'),
+      createMediaFile('人像——危安-草地/5.jpg', '摄影'),
+      createMediaFile('人像——危安-草地/6.jpg', '摄影'),
+      createMediaFile('人像——危安-草地/7.jpg', '摄影'),
+      createMediaFile('人像——危安-草地/8.jpg', '摄影'),
+    ],
+  },
+  {
     id: generateId('摄影', '风景——深圳人才公园'),
     title: '风景——深圳人才公园',
     category: '摄影' as Category,
@@ -507,14 +563,14 @@ export const works: Work[] = [
   },
 
   ...[
-    'AE动画练习.mp4',
-    '公司宣传视频-1m14s.mp4',
-    '视频剪辑-《伴你左右》.mp4',
+    '采星科技(厦门)公司宣传介绍.mp4',
     '采星科技(厦门)公司logo动画-1.mp4',
     '采星科技(厦门)公司logo动画-2.mp4',
-    '采星科技(厦门)公司宣传介绍.mp4',
+    '公司宣传视频-1m14s.mp4',
+    'AE动画练习.mp4',
+    '视频剪辑-《伴你左右》.mp4',
   ].map(filename => {
-    const title = filename.replace('.mp4', '');
+    const title = filename.replace('.mp4', '').replace('公司宣传视频-1m14s', '公司宣传视频');
     const category = '其它' as Category;
     return {
       id: generateId(category, title),
