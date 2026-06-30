@@ -11,9 +11,9 @@ if (!fs.existsSync(TEMP_DIR)) {
 }
 
 const categories = ['AI动画', '3D动画', '其它'];
-const MAX_SIZE_MB = 15;
-const MAX_WIDTH = 960;
-const BITRATE = '1.5M';
+const MAX_SIZE_MB = 10;
+const MAX_WIDTH = 1280;
+const BITRATE = '2M';
 
 let totalSaved = 0;
 let processed = 0;
@@ -46,7 +46,7 @@ categories.forEach(category => {
     
     try {
       fs.copyFileSync(mp4Path, tempInput);
-      const cmd = `"${FFMPEG_PATH}" -y -i "${tempInput}" -vf "scale=${MAX_WIDTH}:-1" -b:v ${BITRATE} -preset veryfast -c:a copy -movflags +faststart "${tempOutput}"`;
+      const cmd = `"${FFMPEG_PATH}" -y -i "${tempInput}" -vf "scale=${MAX_WIDTH}:-1" -b:v ${BITRATE} -preset fast -c:a aac -b:a 128k -movflags +faststart "${tempOutput}"`;
       execSync(cmd, { stdio: 'pipe' });
       
       const newSize = fs.statSync(tempOutput).size;
