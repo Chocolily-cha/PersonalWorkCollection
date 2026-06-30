@@ -7,6 +7,14 @@ import { useSortingConfig } from '@/hooks/useSortingConfig';
 
 const ADMIN_KEY = 'admin';
 
+function arraysEqual(a: string[], b: string[]): boolean {
+  if (a.length !== b.length) return false;
+  for (let i = 0; i < a.length; i++) {
+    if (a[i] !== b[i]) return false;
+  }
+  return true;
+}
+
 export function useWorkOrder(works: Work[]) {
   const [order, setOrder] = useState<string[]>([]);
   const [editMode, setEditMode] = useState(false);
@@ -99,7 +107,7 @@ export function useWorkOrder(works: Work[]) {
     sortingConfig.downloadConfig(order, allMediaOrder);
   }, [order, sortingConfig]);
 
-  const hasCustomOrder = order.length > 0 && order !== defaultOrder;
+  const hasCustomOrder = order.length > 0 && !arraysEqual(order, defaultOrder);
 
   return {
     order,

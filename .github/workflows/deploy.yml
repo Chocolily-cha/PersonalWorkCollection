@@ -43,6 +43,9 @@ jobs:
         run: npm run build 2>&1
         timeout-minutes: 30
 
+      - name: Verify media loading configuration
+        run: node scripts/verify-media-loading.js
+
       - name: Debug build output
         run: |
           ls -la dist/
