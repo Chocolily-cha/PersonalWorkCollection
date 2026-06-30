@@ -104,7 +104,7 @@ export function useSortingConfig() {
 
     const mediaOrder = state.config?.mediaOrder?.[workId];
     if (mediaOrder && Array.isArray(mediaOrder) && mediaOrder.length > 0) {
-      return state.config.mediaOrder[workId];
+      return mediaOrder;
     }
 
     return null;
