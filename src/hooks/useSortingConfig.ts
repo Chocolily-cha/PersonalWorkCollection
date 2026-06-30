@@ -79,8 +79,9 @@ export function useSortingConfig() {
       console.warn('[SortingConfig] Failed to read localStorage work order');
     }
 
-    if (state.config?.workOrder?.length > 0) {
-      return state.config.workOrder;
+    const configOrder = state.config?.workOrder;
+    if (configOrder && Array.isArray(configOrder) && configOrder.length > 0) {
+      return configOrder;
     }
 
     return null;
@@ -101,7 +102,8 @@ export function useSortingConfig() {
       console.warn('[SortingConfig] Failed to read localStorage media order for:', workId);
     }
 
-    if (state.config?.mediaOrder?.[workId]?.length > 0) {
+    const mediaOrder = state.config?.mediaOrder?.[workId];
+    if (mediaOrder && Array.isArray(mediaOrder) && mediaOrder.length > 0) {
       return state.config.mediaOrder[workId];
     }
 
