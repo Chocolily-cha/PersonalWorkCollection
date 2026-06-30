@@ -1,0 +1,34 @@
+  ▲ Next.js 14.2.35
+
+   Creating an optimized production build ...
+ ✓ Compiled successfully
+   Linting and checking validity of types ...
+   Collecting page data ...
+   Generating static pages (0/4) ...
+   Generating static pages (1/4) 
+   Generating static pages (2/4) 
+   Generating static pages (3/4) 
+ ✓ Generating static pages (4/4)
+   Finalizing page optimization ...
+   Collecting build traces ...
+STDERR: 
+STDERR: > Build error occurred
+STDERR: Error: EEXIST: file already exists, copyfile 'D:\AI\TraeProjects\projects\PersonalWorkCollection\.next\static\chunks\170.307e571b5e205096.js' -> 'D:\AI\TraeProjects\projects\PersonalWorkCollection\dist\_next\static\chunks\170.307e571b5e205096.js'
+    at async Object.copyFile (node:internal/fs/promises:620:10)
+    at async _copy (D:\AI\TraeProjects\projects\PersonalWorkCollection\node_modules\next\dist\lib\recursive-copy.js:62:13)
+    at async Promise.all (index 1)
+    at async _copy (D:\AI\TraeProjects\projects\PersonalWorkCollection\node_modules\next\dist\lib\recursive-copy.js:58:13)
+    at async Promise.all (index 0)
+    at async _copy (D:\AI\TraeProjects\projects\PersonalWorkCollection\node_modules\next\dist\lib\recursive-copy.js:58:13)
+    at async recursiveCopy (D:\AI\TraeProjects\projects\PersonalWorkCollection\node_modules\next\dist\lib\recursive-copy.js:68:5)
+    at async Span.traceAsyncFn (D:\AI\TraeProjects\projects\PersonalWorkCollection\node_modules\next\dist\trace\trace.js:154:20)
+    at async exportAppImpl (D:\AI\TraeProjects\projects\PersonalWorkCollection\node_modules\next\dist\export\index.js:278:9)
+    at async D:\AI\TraeProjects\projects\PersonalWorkCollection\node_modules\next\dist\export\index.js:623:16 {
+  errno: -4075,
+  code: 'EEXIST',
+  syscall: 'copyfile',
+  path: 'D:\\AI\\TraeProjects\\projects\\PersonalWorkCollection\\.next\\static\\chunks\\170.307e571b5e205096.js',
+  dest: 'D:\\AI\\TraeProjects\\projects\\PersonalWorkCollection\\dist\\_next\\static\\chunks\\170.307e571b5e205096.js'
+}
+
+Build exited with code 1
