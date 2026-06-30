@@ -43,7 +43,7 @@ export default function Home() {
   const [selectedWork, setSelectedWork] = useState<Work | null>(null);
   const [detailEditMode, setDetailEditMode] = useState(false);
 
-  const { order, editMode, hydrated, sortWorks, exitEditMode, resetOrder, hasCustomOrder } = useWorkOrder(works);
+  const { order, editMode, hydrated, sortWorks, exitEditMode, resetOrder, hasCustomOrder, downloadSortingConfig } = useWorkOrder(works);
 
   const filteredWorks = useMemo(() => {
     const sorted = hasCustomOrder ? sortWorks(works) : works;
@@ -143,6 +143,7 @@ export default function Home() {
               onSave={handleSaveOrder}
               onCancel={() => exitEditMode(false)}
               onReset={() => { resetOrder(); exitEditMode(false); }}
+              onDownloadConfig={downloadSortingConfig}
               detailEditMode={detailEditMode}
               onEnterDetailEdit={() => { if (editMode) exitEditMode(false); setDetailEditMode(true); }}
               onExitDetailEdit={() => setDetailEditMode(false)}

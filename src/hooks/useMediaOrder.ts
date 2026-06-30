@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import { useSortingConfig } from '@/hooks/useSortingConfig';
 
 const KEY_PREFIX = 'portfolioMediaOrder:';
 const getStorageKey = (workId: string): string => KEY_PREFIX + workId;
@@ -6,27 +7,27 @@ const getStorageKey = (workId: string): string => KEY_PREFIX + workId;
 export function useMediaOrder(workId: string, mediaFilenames: string[]) {
   const [order, setOrder] = useState<string[]>([]);
   const [hydrated, setHydrated] = useState(false);
+  
+  const sortingConfig = useSortingConfig();
 
   useEffect(() => {
-    if (typeof window === 'undefined') return;
-    try {
-      const raw = window.localStorage.getItem(getStorageKey(workId));
-      if (raw) {
-        const arr = JSON.parse(raw);
-        if (Array.isArray(arr)) setOrder(arr.filter((x) => typeof x === 'string'));
-      }
-    } catch { /* ignore */ }
+    if (!sortingConfig.hydrated) return;
+    
+    const savedOrder = sortingConfig.getMediaOrder(workId);
+    if (savedOrder && savedOrder.length > 0) {
+      setOrder(savedOrder);
+    }
     setHydrated(true);
-  }, [workId]);
+  }, [workId, sortingConfig]);
 
   useEffect(() => {
     if (!hydrated || !order.length || !mediaFilenames.length) return;
     const matchCount = order.filter((f) => mediaFilenames.includes(f)).length;
     if (matchCount / order.length < 0.3) {
-      try { window.localStorage.removeItem(getStorageKey(workId)); } catch { /* ignore */ }
+      sortingConfig.clearMediaOrderFromLocalStorage(workId);
       setOrder([]);
     }
-  }, [hydrated, order, mediaFilenames, workId]);
+  }, [hydrated, order, mediaFilenames, workId, sortingConfig]);
 
   const sortMedia = useCallback((filenames: string[]): string[] => {
     if (!order.length) return filenames;
@@ -40,16 +41,13 @@ export function useMediaOrder(workId: string, mediaFilenames: string[]) {
 
   const saveOrder = useCallback((newOrder: string[]): boolean => {
     setOrder(newOrder);
-    try {
-      window.localStorage.setItem(getStorageKey(workId), JSON.stringify(newOrder));
-      return true;
-    } catch { return false; }
-  }, [workId]);
+    return sortingConfig.saveMediaOrderToLocalStorage(workId, newOrder);
+  }, [workId, sortingConfig]);
 
   const resetOrder = useCallback(() => {
-    try { window.localStorage.removeItem(getStorageKey(workId)); } catch { /* ignore */ }
+    sortingConfig.clearMediaOrderFromLocalStorage(workId);
     setOrder([]);
-  }, [workId]);
+  }, [workId, sortingConfig]);
 
   return { order, hydrated, sortMedia, saveOrder, resetOrder, hasCustomOrder: order.length > 0 };
 }

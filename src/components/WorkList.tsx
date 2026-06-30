@@ -18,6 +18,7 @@ interface WorkListProps {
   detailEditMode?: boolean;
   onEnterDetailEdit?: () => void;
   onExitDetailEdit?: () => void;
+  onDownloadConfig?: () => void;
 }
 
 export default function WorkList({
@@ -33,6 +34,7 @@ export default function WorkList({
   detailEditMode = false,
   onEnterDetailEdit,
   onExitDetailEdit,
+  onDownloadConfig,
 }: WorkListProps) {
   const [pendingOrder, setPendingOrder] = useState<string[]>(orderIds);
   const [dragState, setDragState] = useState<{ from: number; over: number | null } | null>(null);
@@ -143,6 +145,13 @@ export default function WorkList({
               title="进入后可点击作品卡片打开详情页，拖拽调整其内图片顺序"
             >
               🖼 调整详情页顺序
+            </button>
+            <button
+              onClick={onDownloadConfig}
+              className="px-3 py-1.5 text-sm rounded-lg bg-cyber-green/20 hover:bg-cyber-green/30 text-green-400 border border-green-400/50 transition-colors"
+              title="下载排序配置文件，提交到仓库后可在代码更新后保持排序"
+            >
+              ⬇ 下载配置
             </button>
             <button onClick={onReset} className="px-3 py-1.5 text-sm rounded-lg bg-white/5 hover:bg-white/10 text-gray-300 border border-white/10 transition-colors">
               重置默认

@@ -3,8 +3,8 @@
 import { useCallback, useEffect, useState } from 'react';
 import type { Work } from '@/data/types';
 import { defaultOrder } from '@/data/defaultOrder';
+import { useSortingConfig } from '@/hooks/useSortingConfig';
 
-const STORAGE_KEY = 'portfolioOrder';
 const ADMIN_KEY = 'admin';
 
 export function useWorkOrder(works: Work[]) {
@@ -12,6 +12,8 @@ export function useWorkOrder(works: Work[]) {
   const [editMode, setEditMode] = useState(false);
   const [hydrated, setHydrated] = useState(false);
   const [hasAdminAccess, setHasAdminAccess] = useState(false);
+  
+  const sortingConfig = useSortingConfig();
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -19,28 +21,28 @@ export function useWorkOrder(works: Work[]) {
     const isAdmin = params.get('edit') === '1' && params.get('key') === ADMIN_KEY;
     setHasAdminAccess(isAdmin);
     if (isAdmin) setEditMode(true);
-    try {
-      const raw = window.localStorage.getItem(STORAGE_KEY);
-      if (raw) {
-        const arr = JSON.parse(raw);
-        if (Array.isArray(arr)) setOrder(arr.filter((x) => typeof x === 'string'));
-      } else {
-        setOrder(defaultOrder);
-      }
-    } catch {
+  }, []);
+
+  useEffect(() => {
+    if (!sortingConfig.hydrated) return;
+    
+    const savedOrder = sortingConfig.getWorkOrder();
+    if (savedOrder && savedOrder.length > 0) {
+      setOrder(savedOrder);
+    } else {
       setOrder(defaultOrder);
     }
     setHydrated(true);
-  }, []);
+  }, [sortingConfig.hydrated, sortingConfig]);
 
   useEffect(() => {
     if (!hydrated || !order.length || !works.length) return;
     const matchCount = order.filter((id) => works.some((w) => w.id === id)).length;
     if (matchCount / order.length < 0.3) {
-      try { window.localStorage.removeItem(STORAGE_KEY); } catch { /* ignore */ }
+      sortingConfig.clearWorkOrderFromLocalStorage();
       setOrder(defaultOrder);
     }
-  }, [hydrated, order, works]);
+  }, [hydrated, order, works, sortingConfig]);
 
   const sortWorks = useCallback((list: Work[]): Work[] => {
     if (!order.length) return list;
@@ -69,7 +71,7 @@ export function useWorkOrder(works: Work[]) {
   const exitEditMode = useCallback((save: boolean, newOrder?: string[]) => {
     if (save && newOrder) {
       setOrder(newOrder);
-      try { window.localStorage.setItem(STORAGE_KEY, JSON.stringify(newOrder)); } catch { /* ignore */ }
+      sortingConfig.saveWorkOrderToLocalStorage(newOrder);
     }
     setEditMode(false);
     if (typeof window !== 'undefined') {
@@ -78,12 +80,12 @@ export function useWorkOrder(works: Work[]) {
       url.searchParams.delete('key');
       window.history.replaceState({}, '', url.toString());
     }
-  }, []);
+  }, [sortingConfig]);
 
   const resetOrder = useCallback(() => {
     setOrder(defaultOrder);
-    try { window.localStorage.removeItem(STORAGE_KEY); } catch { /* ignore */ }
-  }, []);
+    sortingConfig.clearWorkOrderFromLocalStorage();
+  }, [sortingConfig]);
 
   const moveItem = useCallback((list: string[], from: number, to: number) => {
     const next = list.slice();
@@ -92,5 +94,25 @@ export function useWorkOrder(works: Work[]) {
     return next;
   }, []);
 
-  return { order, editMode, hydrated, hasAdminAccess, sortWorks, enterEditMode, exitEditMode, resetOrder, moveItem, hasCustomOrder: order.length > 0 };
+  const downloadSortingConfig = useCallback((mediaOrder?: Record<string, string[]>) => {
+    const allMediaOrder: Record<string, string[]> = mediaOrder || {};
+    sortingConfig.downloadConfig(order, allMediaOrder);
+  }, [order, sortingConfig]);
+
+  const hasCustomOrder = order.length > 0 && order !== defaultOrder;
+
+  return {
+    order,
+    editMode,
+    hydrated,
+    hasAdminAccess,
+    sortWorks,
+    enterEditMode,
+    exitEditMode,
+    resetOrder,
+    moveItem,
+    hasCustomOrder,
+    downloadSortingConfig,
+    sortingConfig,
+  };
 }
