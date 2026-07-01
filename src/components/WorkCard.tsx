@@ -130,13 +130,20 @@ export default function WorkCard({ work, onClick, index, editMode = false }: Wor
               </div>
             </>
           ) : (
-            <img
-              src={getMediaUrl(firstMedia.filePath)}
-              alt={work.title}
-              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-              loading="lazy"
-              decoding="async"
-            />
+            <div className="relative w-full h-full">
+              {!isImageLoaded && (
+                <div className="absolute inset-0 bg-gradient-to-br from-cyber-purple/20 via-cyber-blue/10 to-cyber-cyan/20 animate-pulse" />
+              )}
+              <img
+                src={fallbackUrl || getMediaUrl(firstMedia.filePath)}
+                alt={work.title}
+                className={`w-full h-full object-cover transition-all duration-500 group-hover:scale-110 ${isImageLoaded ? 'opacity-100' : 'opacity-0'}`}
+                loading="lazy"
+                decoding="async"
+                onLoad={handleImageLoad}
+                onError={handleImageError}
+              />
+            </div>
           )}
 
           <div className="absolute top-3 right-3 px-2 py-1 rounded-full bg-black/50 backdrop-blur text-xs text-white z-10">

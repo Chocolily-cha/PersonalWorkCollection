@@ -20,6 +20,7 @@ export interface MediaFile {
   isImage: boolean;
   thumbnail?: string;
   webpThumbnail?: string;
+  detailUrl?: string;
 }
 
 export interface Work {

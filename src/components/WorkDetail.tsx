@@ -150,7 +150,7 @@ export default function WorkDetail({ work, onClose, editMode = false, onBackToOv
                   initial={{ opacity: 0, scale: 0.95 }}
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, scale: 1.05 }}
-                  src={getMediaUrl(currentMedia.filePath)}
+                  src={getMediaUrl(currentMedia.detailUrl || currentMedia.filePath)}
                   alt={work.title}
                   className="w-full h-full object-contain"
                 />
