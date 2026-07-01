@@ -7,11 +7,15 @@ function createMediaFile(filename: string, category: string): MediaFile {
   const filePath = `${PORTFOLIO_DIR}/${category}/${filename}`;
   const isVideo = extension === 'mp4';
   
-  const baseName = filename.replace(/\.(mp4|jpg|jpeg|png|gif|tiff)$/i, '');
+  const parts = filename.split('/');
+  const simpleFilename = parts.pop() || filename;
+  const folderName = parts[0] || '';
+  const baseName = simpleFilename.replace(/\.(mp4|jpg|jpeg|png|gif|tiff)$/i, '');
+  const uniqueBaseName = folderName ? `${folderName}-${baseName}` : `${category}-${baseName}`;
   const thumbnail = isVideo 
-    ? `thumbnails/${baseName}.jpg` 
-    : `thumbnails/${baseName}.webp`;
-  const detailUrl = isVideo ? undefined : `detail/${baseName}.webp`;
+    ? `thumbnails/${uniqueBaseName}.jpg` 
+    : `thumbnails/${uniqueBaseName}.webp`;
+  const detailUrl = isVideo ? undefined : `detail/${uniqueBaseName}.webp`;
   
   return {
     id: `${category}-${filename}`,
