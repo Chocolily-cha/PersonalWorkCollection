@@ -11,11 +11,18 @@ function createMediaFile(filename: string, category: string): MediaFile {
   const simpleFilename = parts.pop() || filename;
   const folderName = parts[0] || '';
   const baseName = simpleFilename.replace(/\.(mp4|jpg|jpeg|png|gif|tiff)$/i, '');
-  const uniqueBaseName = folderName ? `${folderName}-${baseName}` : `${category}-${baseName}`;
-  const thumbnail = isVideo 
-    ? `thumbnails/${uniqueBaseName}.jpg` 
-    : `thumbnails/${uniqueBaseName}.webp`;
-  const detailUrl = isVideo ? undefined : `detail/${uniqueBaseName}.webp`;
+  
+  let thumbnail: string;
+  let detailUrl: string | undefined;
+  
+  if (isVideo) {
+    thumbnail = `thumbnails/${baseName}.jpg`;
+    detailUrl = undefined;
+  } else {
+    const uniqueBaseName = folderName ? `${folderName}-${baseName}` : `${category}-${baseName}`;
+    thumbnail = `thumbnails/${uniqueBaseName}.webp`;
+    detailUrl = `detail/${uniqueBaseName}.webp`;
+  }
   
   return {
     id: `${category}-${filename}`,
