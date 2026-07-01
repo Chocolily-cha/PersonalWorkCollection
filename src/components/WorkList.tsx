@@ -182,7 +182,7 @@ export default function WorkList({
         </motion.div>
       )}
 
-      <div ref={dragImageRef} aria-hidden className="fixed top-0 left-0 pointer-events-none opacity-70 -z-10" style={{ width: 240 }}>
+      <div ref={dragImageRef} aria-hidden className="fixed top-0 left-0 pointer-events-none opacity-0 -z-10" style={{ width: 240 }}>
         <div className="glass-card rounded-xl overflow-hidden border-2 border-cyber-cyan">
           <div className="aspect-[4/3] bg-white/10" />
         </div>
